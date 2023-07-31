@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".feat.MainActivity"
+            android:name=".feat.map.MainActivity"
             android:exported="false"/>
     </application>
 

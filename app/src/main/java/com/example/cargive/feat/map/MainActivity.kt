@@ -1,4 +1,4 @@
-package com.example.cargive.feat
+package com.example.cargive.feat.map
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
