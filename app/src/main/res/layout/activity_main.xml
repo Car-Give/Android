@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".feat.map.MainActivity">
+    tools:context=".feat.map.MainActivity"
+    android:id="@+id/map_frame">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map_fragment"
+    <net.daum.mf.map.api.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.naver.maps.map.MapFragment" />
+        android:layout_height="match_parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

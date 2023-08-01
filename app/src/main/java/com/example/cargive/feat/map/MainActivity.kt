@@ -1,63 +1,89 @@
 package com.example.cargive.feat.map
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
-import com.example.cargive.R
 import com.example.cargive.databinding.ActivityMainBinding
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.util.FusedLocationSource
-import java.security.Permissions
+import net.daum.mf.map.api.MapPOIItem
+import net.daum.mf.map.api.MapPoint
+import net.daum.mf.map.api.MapView
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(){
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mapFragment: MapFragment
-    private lateinit var locationSource: FusedLocationSource
-    private lateinit var naverMap: NaverMap
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        val fm = supportFragmentManager
 
-        mapFragment = fm.findFragmentById(binding.mapFragment.id) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(binding.mapFragment.id, it).commit()
-            }
-        mapFragment.getMapAsync(this)
+//        key hash 확인용 코드
+//        var packageInfo: PackageInfo? = null
+//        try {
+//            packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+//        } catch (e: PackageManager.NameNotFoundException) {
+//            e.printStackTrace()
+//        }
+//        if (packageInfo == null) Log.e("KeyHash", "KeyHash:null")
+//        for (signature in packageInfo!!.signatures) {
+//            try {
+//                val md: MessageDigest = MessageDigest.getInstance("SHA")
+//                md.update(signature.toByteArray())
+//                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+//            } catch (e: NoSuchAlgorithmException) {
+//                Log.d("KeyHash", "Unable to get MessageDigest. signature=$signature")
+//
+//            }
+//        }
+        val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,ConstraintLayout.LayoutParams.MATCH_PARENT)
+        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+        startTracking()
+
+//        val marker = MapPOIItem()
+//        marker.itemName = titleBar
+//        marker.mapPoint = mapPoint
+//        marker.markerType = MapPOIItem.MarkerType.RedPin
+//        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
+//        mapView.addPOIItem(marker)
 
 
     }
-
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        if (locationSource.onRequestPermissionsResult(requestCode, permissions,
-                grantResults)) {
-            if (!locationSource.isActivated) { // 권한 거부됨
-                naverMap.locationTrackingMode = LocationTrackingMode.None
-            }
-            return
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    @SuppressLint("MissingPermission")
+    private fun startTracking() {
+        val lm: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val userNowLocation: Location? = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        //위도 , 경도
+        val uLatitude = userNowLocation?.latitude
+        val uLongitude = userNowLocation?.longitude
+        Log.d("x, y", "latitude: $uLatitude  longitude: $uLongitude")
+        val uNowPosition = MapPoint.mapPointWithGeoCoord(uLatitude!!, uLongitude!!)
+        val marker = MapPOIItem()
+        marker.itemName = "현 위치"
+        marker.mapPoint =uNowPosition
+        marker.markerType = MapPOIItem.MarkerType.RedPin
+        marker.selectedMarkerType = MapPOIItem.MarkerType.BluePin
+        binding.mapView.addPOIItem(marker)
     }
 
-    override fun onMapReady(map: NaverMap) {
-        naverMap = map
-        naverMap.locationSource = locationSource
-        naverMap.locationTrackingMode = LocationTrackingMode.Follow
-        naverMap.uiSettings.isLocationButtonEnabled = true
-        naverMap.uiSettings.isZoomControlEnabled = false
-        naverMap.uiSettings.isIndoorLevelPickerEnabled = false
-        naverMap.isLiteModeEnabled = true
-//        naverMap.mapType = NaverMap.MapType.Navi
+    private fun stopTracking() {
+        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOff
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    override fun onDestroy() {
+        super.onDestroy()
+        stopTracking()
     }
+
+
 }
