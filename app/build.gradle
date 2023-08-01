@@ -18,6 +18,7 @@ android {
         versionName "1.0"
         buildConfigField("String", "api", properties.getProperty("kakaoUrl"))
         buildConfigField("String", "appKey", properties.getProperty("appKey"))
+        buildConfigField("String", "restKey", properties.getProperty("restKey"))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

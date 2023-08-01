@@ -9,11 +9,18 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import com.example.cargive.databinding.ActivityMainBinding
+import com.example.cargive.model.network.search.KakaoRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
@@ -22,7 +29,10 @@ import java.security.NoSuchAlgorithmException
 
 class MainActivity : AppCompatActivity(){
     private lateinit var binding: ActivityMainBinding
-
+    private var latitude = 0.0
+    private var longitude = 0.0
+    private val repository = KakaoRepository()
+    private var page = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -64,20 +74,39 @@ class MainActivity : AppCompatActivity(){
         val lm: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val userNowLocation: Location? = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
         //위도 , 경도
-        val uLatitude = userNowLocation?.latitude
-        val uLongitude = userNowLocation?.longitude
-        Log.d("x, y", "latitude: $uLatitude  longitude: $uLongitude")
-        val uNowPosition = MapPoint.mapPointWithGeoCoord(uLatitude!!, uLongitude!!)
-        val marker = MapPOIItem()
-        marker.itemName = "현 위치"
-        marker.mapPoint =uNowPosition
-        marker.markerType = MapPOIItem.MarkerType.RedPin
-        marker.selectedMarkerType = MapPOIItem.MarkerType.BluePin
-        binding.mapView.addPOIItem(marker)
+        userNowLocation?.latitude?.let {
+            latitude = it
+        }
+        userNowLocation?.longitude?.let {
+            longitude = it
+        }
+        Log.d("x, y", "latitude: $latitude  longitude: $longitude")
+//        val uNowPosition = MapPoint.mapPointWithGeoCoord(latitude!!, longitude!!)
+//        val marker = MapPOIItem()
+//        marker.itemName = "현 위치"
+//        marker.mapPoint =uNowPosition
+//        marker.markerType = MapPOIItem.MarkerType.RedPin
+//        marker.selectedMarkerType = MapPOIItem.MarkerType.BluePin
+//        binding.mapView.addPOIItem(marker)
+//        searchPlaces("주차장")
     }
 
     private fun stopTracking() {
         binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOff
+    }
+
+    private fun searchPlaces(query: String) {
+        val coroutine = CoroutineScope(Dispatchers.IO)
+        coroutine.launch {
+            if (!this@MainActivity.isFinishing && longitude != 0.0 && latitude != 0.0 ) {
+                val resultDeferred = coroutine.async {
+                    repository.getPlaceInfoByQuery(query, longitude, latitude, page)
+                }
+                val result = resultDeferred.await()
+                Log.d("결과", result.toString())
+                Handler(Looper.getMainLooper()).postDelayed({stopTracking()},  2000)
+            }
+        }
     }
 
     override fun onDestroy() {
