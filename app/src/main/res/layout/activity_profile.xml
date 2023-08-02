@@ -60,7 +60,6 @@
         android:background="@drawable/pofile_background"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@id/top">
-
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
@@ -92,7 +91,8 @@
             android:background="@drawable/more_round_rec"
             android:clipToOutline="true"
             app:layout_constraintEnd_toStartOf="@id/setting"
-            app:layout_constraintTop_toBottomOf="@id/user_id">
+            app:layout_constraintTop_toBottomOf="@id/user_id"
+            android:elevation="20dp">
 
             <RelativeLayout
                 android:id="@+id/frame_5759"
@@ -159,7 +159,9 @@
             android:background="@drawable/round_rectangle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/setting">
+            app:layout_constraintTop_toBottomOf="@id/setting"
+            android:elevation="10dp"
+            android:clickable="true">
             <!-- Auto layout, variables, and unit scale are not yet supported -->
             <RelativeLayout
                 android:layout_width="24dp"
@@ -191,6 +193,7 @@
             android:layout_marginTop="18dp"
             android:layout_marginEnd="24dp"
             android:background="@drawable/round_rectangle"
+            android:elevation="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/profile_car">
@@ -228,6 +231,7 @@
             android:background="@drawable/round_rectangle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:elevation="10dp"
             app:layout_constraintTop_toBottomOf="@id/bookmark">
 
             <RelativeLayout

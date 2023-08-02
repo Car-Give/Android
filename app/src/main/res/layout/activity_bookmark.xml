@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feat.profile.BookmarkActivity">
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:clipToOutline="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    <!-- Auto layout, variables, and unit scale are not yet supported -->
+        <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/frame_40078"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:clipToOutline="true">
+        <!-- Auto layout, variables, and unit scale are not yet supported -->
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/back"
+            android:clipToOutline="true" />
+        <!-- Auto layout, variables, and unit scale are not yet supported -->
+
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/some_id"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal|top"
+            android:text="즐겨찾기"
+            android:textAppearance="@style/some_id"
+            android:textStyle="bold" />
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/count_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="그룹 0개"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        />
+
+    <RelativeLayout
+        android:id="@+id/profile_car"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/round_rectangle"
+        android:outlineAmbientShadowColor="@color/gray"
+        android:outlineSpotShadowColor="@color/gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:elevation="10dp"
+        android:clickable="true">
+        <!-- Auto layout, variables, and unit scale are not yet supported -->
+        <RelativeLayout
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="24dp"
+            android:background="@drawable/car_img"
+            android:clipToOutline="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="68dp"
+            android:gravity="center_vertical"
+            android:text="내 차 정보"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

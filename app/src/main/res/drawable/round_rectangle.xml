@@ -1,19 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="312dp"
-    android:height="54dp"
-    android:viewportWidth="312"
-    android:viewportHeight="54"
-    >
-    <group>
-        <clip-path
-            android:pathData="M8 0H304C308.418 0 312 3.58172 312 8V46C312 50.4183 308.418 54 304 54H8C3.58172 54 0 50.4183 0 46V8C0 3.58172 3.58172 0 8 0Z"
-            />
-        <path
-            android:pathData="M0 0V54H312V0"
-            android:fillColor="#FFFFFF"
-            />
-    </group>
-</vector>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/gray" /> <!-- 클릭 상태일 때 배경 색상 -->
+            <corners android:radius="8dp" /> <!-- 모서리 둥글게 설정 -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- 일반 상태일 때 배경 색상 -->
+            <corners android:radius="8dp" /> <!-- 모서리 둥글게 설정 -->
+        </shape>
+    </item>
+</selector>
