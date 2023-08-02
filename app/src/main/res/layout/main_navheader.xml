@@ -240,7 +240,7 @@
             android:background="#ffffff"
             android:gravity="start"
             android:paddingStart="20sp"
-            android:text="이용기록"
+            android:text="환경설정"
             android:textColor="#aaaaaa"
             android:textSize="18sp" />
 

@@ -74,10 +74,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        nav.userProfile.setOnClickListener {
-            Toast.makeText(this@MainActivity.applicationContext, "프로필 눌림!", Toast.LENGTH_SHORT).show()
-            Log.d("btn", "프로필 눌림!")
-        }
+        setNavListener()
+
         this.onBackPressedDispatcher.addCallback(this, callback)
 
 //        key hash 확인용 코드
@@ -148,6 +146,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Log.d("결과", result.toString())
                 Handler(Looper.getMainLooper()).postDelayed({stopTracking()},  2000)
             }
+        }
+    }
+
+    private fun setNavListener() {
+        nav.profileLink.setOnClickListener {
+            Toast.makeText(this@MainActivity.applicationContext, "프로필 눌림!", Toast.LENGTH_SHORT).show()
+            Log.d("btn", "프로필 링크 눌림!")
+        }
+        nav.aroundBtn.setOnClickListener {
+
+        }
+        nav.mycarBtn.setOnClickListener {
+
+        }
+        nav.favoriteBtn.setOnClickListener {
+
+        }
+        nav.useInfo.setOnClickListener {
+
+        }
+        nav.useHistory.setOnClickListener {
+
+        }
+        nav.announcement.setOnClickListener {
+
+        }
+        nav.customerService.setOnClickListener {
+
+        }
+        nav.appSettings.setOnClickListener {
+
         }
     }
 
