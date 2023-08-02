@@ -13,10 +13,16 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Base64
 import android.util.Log
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
 import com.example.cargive.databinding.ActivityMainBinding
+import com.example.cargive.databinding.MainNavheaderBinding
 import com.example.cargive.model.network.search.KakaoRepository
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,16 +33,52 @@ import net.daum.mf.map.api.MapView
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
     private lateinit var binding: ActivityMainBinding
+    private lateinit var nav: MainNavheaderBinding
     private var latitude = 0.0
     private var longitude = 0.0
     private val repository = KakaoRepository()
     private var page = 1
+    private var backPressed: Long = 0
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if(binding.drawerLayout.isDrawerOpen(GravityCompat.START)){
+                binding.drawerLayout.closeDrawers()
+            }else{
+                if (System.currentTimeMillis() > backPressed + 2500) {
+                    backPressed = System.currentTimeMillis()
+                    Toast.makeText(applicationContext, "Back 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT)
+                        .show()
+                    return
+                }
+
+                if (System.currentTimeMillis() <= backPressed + 2500) {
+                    finishAffinity()
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        nav = MainNavheaderBinding.bind(binding.navigationView.getHeaderView(0))
         setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        binding.navigationView.setNavigationItemSelectedListener(this)
+        binding.menuBtn.setOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        nav.userProfile.setOnClickListener {
+            Toast.makeText(this@MainActivity.applicationContext, "프로필 눌림!", Toast.LENGTH_SHORT).show()
+            Log.d("btn", "프로필 눌림!")
+        }
+        this.onBackPressedDispatcher.addCallback(this, callback)
 
 //        key hash 확인용 코드
 //        var packageInfo: PackageInfo? = null
@@ -57,8 +99,8 @@ class MainActivity : AppCompatActivity(){
 //            }
 //        }
         val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,ConstraintLayout.LayoutParams.MATCH_PARENT)
-        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
-        startTracking()
+//        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+//        startTracking()
 
 //        val marker = MapPOIItem()
 //        marker.itemName = titleBar
@@ -92,7 +134,7 @@ class MainActivity : AppCompatActivity(){
     }
 
     private fun stopTracking() {
-        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOff
+//        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOff
     }
 
     private fun searchPlaces(query: String) {
@@ -112,6 +154,11 @@ class MainActivity : AppCompatActivity(){
     override fun onDestroy() {
         super.onDestroy()
         stopTracking()
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        binding.drawerLayout.closeDrawers() // 기능을 수행하고 네비게이션을 닫아준다.
+        return false
     }
 
 
