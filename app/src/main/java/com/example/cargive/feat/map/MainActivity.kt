@@ -1,45 +1,53 @@
 package com.example.cargive.feat.map
 
 import android.Manifest
+import android.R
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Base64
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import com.example.cargive.databinding.ActivityMainBinding
 import com.example.cargive.databinding.MainNavheaderBinding
 import com.example.cargive.model.network.search.KakaoRepository
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import net.daum.mf.map.api.MapPOIItem
-import net.daum.mf.map.api.MapPoint
-import net.daum.mf.map.api.MapView
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+    OnMapReadyCallback {
+    private val PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION)
+
+
+    private val REQUEST_PERMISSION_CODE = 1
+    private var googleMap: GoogleMap? = null
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var nav: MainNavheaderBinding
     private var latitude = 0.0
     private var longitude = 0.0
-    private val repository = KakaoRepository()
-    private var page = 1
+    private lateinit var locationManager: LocationManager
     private var backPressed: Long = 0
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -66,17 +74,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav = MainNavheaderBinding.bind(binding.navigationView.getHeaderView(0))
         setContentView(binding.root)
 
+        binding.mapView.getMapAsync(this)
+
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.navigationView.setNavigationItemSelectedListener(this)
         binding.menuBtn.setOnClickListener {
+            binding.navigationView.bringToFront()
+            binding.drawerLayout.invalidate()
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
-
         setNavListener()
-
+        binding.mapView.onCreate(savedInstanceState)
+        binding.mapView.getMapAsync(this)
         this.onBackPressedDispatcher.addCallback(this, callback)
+        if (checkPermissions()) {
+//            initMap()
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
+        }
+
 
 //        key hash 확인용 코드
 //        var packageInfo: PackageInfo? = null
@@ -96,55 +114,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //
 //            }
 //        }
-        val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,ConstraintLayout.LayoutParams.MATCH_PARENT)
-//        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
-//        startTracking()
 
-//        val marker = MapPOIItem()
-//        marker.itemName = titleBar
-//        marker.mapPoint = mapPoint
-//        marker.markerType = MapPOIItem.MarkerType.RedPin
-//        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
-//        mapView.addPOIItem(marker)
+
+
 
 
     }
-    @SuppressLint("MissingPermission")
-    private fun startTracking() {
-        val lm: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val userNowLocation: Location? = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        //위도 , 경도
-        userNowLocation?.latitude?.let {
-            latitude = it
-        }
-        userNowLocation?.longitude?.let {
-            longitude = it
-        }
-        Log.d("x, y", "latitude: $latitude  longitude: $longitude")
-//        val uNowPosition = MapPoint.mapPointWithGeoCoord(latitude!!, longitude!!)
-//        val marker = MapPOIItem()
-//        marker.itemName = "현 위치"
-//        marker.mapPoint =uNowPosition
-//        marker.markerType = MapPOIItem.MarkerType.RedPin
-//        marker.selectedMarkerType = MapPOIItem.MarkerType.BluePin
-//        binding.mapView.addPOIItem(marker)
-//        searchPlaces("주차장")
-    }
 
-    private fun stopTracking() {
-//        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOff
-    }
+
+//    private fun getCurrentLocation() {
+//        if(::locationManager.isInitialized) {
+//            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        }
+//
+//        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//        if(isGpsEnabled) {
+//            when {
+//            }
+//        }
+//    }
+
 
     private fun searchPlaces(query: String) {
         val coroutine = CoroutineScope(Dispatchers.IO)
         coroutine.launch {
             if (!this@MainActivity.isFinishing && longitude != 0.0 && latitude != 0.0 ) {
-                val resultDeferred = coroutine.async {
-                    repository.getPlaceInfoByQuery(query, longitude, latitude, page)
-                }
-                val result = resultDeferred.await()
-                Log.d("결과", result.toString())
-                Handler(Looper.getMainLooper()).postDelayed({stopTracking()},  2000)
+
             }
         }
     }
@@ -180,14 +175,102 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopTracking()
+    override fun onStart() {
+        super.onStart()
+        binding.mapView.onStart()
     }
-
+    override fun onStop() {
+        super.onStop()
+        binding.mapView.onStop()
+    }
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.onResume()
+    }
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.onPause()
+    }
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.mapView.onLowMemory()
+    }
+    override fun onDestroy() {
+        binding.mapView.onDestroy()
+        super.onDestroy()
+    }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         binding.drawerLayout.closeDrawers() // 기능을 수행하고 네비게이션을 닫아준다.
         return false
+    }
+
+    private fun checkPermissions(): Boolean {
+        for (permission in PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false
+            }
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+//        initMap()
+    }
+
+
+
+
+
+    override fun onMapReady(p0: GoogleMap) {
+        googleMap = p0
+        if (checkPermissions()) {
+            setLocationUpdates()
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun setLocationUpdates() {
+        val lm = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10.0f, locationListener)
+    }
+    val locationListener = object : android.location.LocationListener {
+        override fun onLocationChanged(location: Location) {
+            // 위치가 변경되었을 때 호출됩니다.
+            latitude = location.latitude
+            longitude = location.longitude
+            googleMap?.let {
+                if (longitude != 0.0 && latitude != 0.0) {
+                    val marker = LatLng(latitude, longitude)
+                    it.addMarker(MarkerOptions().position(marker).title("여기"))
+                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
+                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+                }
+            }
+        }
+
+        override fun onLocationChanged(locations: MutableList<Location>) {
+            super.onLocationChanged(locations)
+            //위치가 변경되어 위치가 일괄 전달될 때 호출됩니다.
+
+        }
+        override fun onProviderDisabled(provider: String) {
+            super.onProviderDisabled(provider)
+            // 사용자가 GPS를 끄는 등의 행동을 해서 위치값에 접근할 수 없을 때 호출됩니다.
+        }
+
+        override fun onProviderEnabled(provider: String) {
+            super.onProviderEnabled(provider)
+            // 사용자가 GPS를 on하는 등의 행동을 해서 위치값에 접근할 수 있게 되었을 때 호출됩니다.
+        }
+
+        override fun onFlushComplete(requestCode: Int) {
+            super.onFlushComplete(requestCode)
+            //플러시 작업이 완료되고 플러시된 위치가 전달된 후 호출됩니다.
+        }
     }
 
 
