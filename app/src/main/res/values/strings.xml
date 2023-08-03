@@ -3,4 +3,5 @@
     <string name="some_id">프로필 </string>
     <string name="name">김철수</string>
     <string name="user_id"> user id </string>
+    <string name="book_mark">우리 동네 주차장</string>
 </resources>

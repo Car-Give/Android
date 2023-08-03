@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:id="@+id/item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/round_rectangle"
+        android:outlineAmbientShadowColor="@color/gray"
+        android:outlineSpotShadowColor="@color/gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:elevation="10dp"
+        android:clickable="true">
+        <!-- Auto layout, variables, and unit scale are not yet supported -->
+        <RelativeLayout
+            android:id="@+id/checkstar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/bookmark_img"
+            android:backgroundTint="#BFE1FF"
+            android:clipToOutline="true" />
+
+        <TextView
+            android:id="@+id/mark_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="68dp"
+            android:gravity="center_vertical"
+            android:text="내 차 정보"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="68dp"
+            android:gravity="center_vertical"
+            android:text="저장한 주차장"
+            android:textSize="10sp" />
+        <TextView
+            android:id="@+id/mark_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="128dp"
+            android:gravity="center_vertical"
+            android:text="2개"
+            android:textSize="10sp"
+            android:textColor="#0080F5"/>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/right_arrow"
+            android:backgroundTint="@color/gray"/>
+
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
