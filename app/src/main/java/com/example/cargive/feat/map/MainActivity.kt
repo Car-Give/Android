@@ -1,10 +1,12 @@
 package com.example.cargive.feat.map
 
 import android.Manifest
-import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
@@ -17,16 +19,26 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import com.example.cargive.BuildConfig
+import com.example.cargive.R
 import com.example.cargive.databinding.ActivityMainBinding
 import com.example.cargive.databinding.MainNavheaderBinding
 import com.example.cargive.model.network.search.KakaoRepository
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.Task
+import com.google.android.libraries.places.api.Places
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +49,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     OnMapReadyCallback {
     private val PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION)
-
-
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.INTERNET)
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val REQUEST_PERMISSION_CODE = 1
     private var googleMap: GoogleMap? = null
 
@@ -73,8 +85,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         nav = MainNavheaderBinding.bind(binding.navigationView.getHeaderView(0))
         setContentView(binding.root)
+        Places.initialize(applicationContext, BuildConfig.appKey)
+        val placesClient = Places.createClient(this)
 
-        binding.mapView.getMapAsync(this)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -90,7 +104,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.mapView.getMapAsync(this)
         this.onBackPressedDispatcher.addCallback(this, callback)
         if (checkPermissions()) {
-//            initMap()
+//            setLocationUpdates()
         } else {
             ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
         }
@@ -133,7 +147,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            }
 //        }
 //    }
-
 
     private fun searchPlaces(query: String) {
         val coroutine = CoroutineScope(Dispatchers.IO)
@@ -215,7 +228,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+//        setLocationUpdates()
 //        initMap()
     }
 
@@ -225,32 +238,82 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
+        Log.d("map", "map ready!")
         if (checkPermissions()) {
-            setLocationUpdates()
+//            setLocationUpdates()
+            requestLocation()
         } else {
             ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
         }
     }
 
     @SuppressLint("MissingPermission")
+    private fun requestLocation() {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                // location 객체를 사용하여 현재 위치 정보를 얻어옵니다.
+                if (location != null) {
+                    latitude = location.latitude
+                    longitude = location.longitude
+                    googleMap?.let {
+                        if (longitude != 0.0 && latitude != 0.0) {
+                            val markerIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.point))
+                            val marker = LatLng(latitude, longitude)
+                            val markerOptions = MarkerOptions()
+                                .position(marker)
+                                .icon(markerIcon)
+                                .anchor(0.5f, 1.0f)
+                            it.addMarker(markerOptions)
+                            it.moveCamera(CameraUpdateFactory.newLatLng(marker))
+                            it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                // 위치 정보 가져오기 실패 처리
+            }
+    }
+
+    fun getMarkerIconFromDrawable(drawable: Drawable?): BitmapDescriptor {
+        val canvas = Canvas()
+        val bitmap = Bitmap.createBitmap(
+            drawable?.intrinsicWidth ?: 0,
+            drawable?.intrinsicHeight ?: 0,
+            Bitmap.Config.ARGB_8888
+        )
+        canvas.setBitmap(bitmap)
+        drawable?.setBounds(0, 0, canvas.width, canvas.height)
+        drawable?.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+    @SuppressLint("MissingPermission")
     fun setLocationUpdates() {
         val lm = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10.0f, locationListener)
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10.0f, locationListener)
     }
     val locationListener = object : android.location.LocationListener {
         override fun onLocationChanged(location: Location) {
+            Log.d("location", location.toString())
             // 위치가 변경되었을 때 호출됩니다.
             latitude = location.latitude
             longitude = location.longitude
             googleMap?.let {
                 if (longitude != 0.0 && latitude != 0.0) {
+                    it.clear() // 이전 마커 제거
+                    val markerIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.point))
                     val marker = LatLng(latitude, longitude)
-                    it.addMarker(MarkerOptions().position(marker).title("여기"))
+                    val markerOptions = MarkerOptions()
+                        .position(marker)
+                        .icon(markerIcon)
+                        .anchor(0.5f, 1.0f)
+                    it.addMarker(markerOptions)
                     it.moveCamera(CameraUpdateFactory.newLatLng(marker))
                     it.moveCamera(CameraUpdateFactory.zoomTo(15f))
                 }
             }
         }
+
 
         override fun onLocationChanged(locations: MutableList<Location>) {
             super.onLocationChanged(locations)
