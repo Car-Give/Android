@@ -36,10 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.Places
 import com.google.android.material.navigation.NavigationView
@@ -57,6 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val REQUEST_PERMISSION_CODE = 1
     private var googleMap: GoogleMap? = null
+    private var cMarker: Marker? = null
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var nav: MainNavheaderBinding
@@ -277,9 +275,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 .position(marker)
                                 .icon(markerIcon)
                                 .anchor(0.5f, 1.0f)
-                            it.addMarker(markerOptions)
+                            cMarker=it.addMarker(markerOptions)
                             it.moveCamera(CameraUpdateFactory.newLatLng(marker))
                             it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+                            setLocationUpdates()
+//                            Handler(Looper.getMainLooper()).postDelayed({added?.remove()}, 3000)
                         }
                     }
                 }
@@ -314,16 +314,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             longitude = location.longitude
             googleMap?.let {
                 if (longitude != 0.0 && latitude != 0.0) {
-                    it.clear() // 이전 마커 제거
+                    if(cMarker != null) {
+                        cMarker?.remove()
+                    } else {
+                        it.clear()
+                    }
                     val markerIcon = getMarkerIconFromDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.point))
                     val marker = LatLng(latitude, longitude)
                     val markerOptions = MarkerOptions()
                         .position(marker)
                         .icon(markerIcon)
                         .anchor(0.5f, 1.0f)
-                    it.addMarker(markerOptions)
-                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
-                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+                    cMarker = it.addMarker(markerOptions)
+//                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
+//                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
                 }
             }
         }
