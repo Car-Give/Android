@@ -12,6 +12,9 @@
         android:theme="@style/Theme.Design.Light.NoActionBar"
         tools:targetApi="33">
         <activity
+            android:name=".IntroActivity"
+            android:exported="false" />
+        <activity
             android:name=".feat.login.LoginActivity"
             android:exported="true">
             <intent-filter>
@@ -22,7 +25,7 @@
         </activity>
         <activity
             android:name=".feat.map.MainActivity"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>
