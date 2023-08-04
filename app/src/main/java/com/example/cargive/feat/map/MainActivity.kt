@@ -15,6 +15,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -74,7 +77,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
 
                 if (System.currentTimeMillis() <= backPressed + 2500) {
-                    finishAffinity()
+                    moveTaskToBack(true)
+                    finishAndRemoveTask()
+                    android.os.Process.killProcess(android.os.Process.myPid())
                 }
             }
         }
@@ -109,6 +114,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
         }
 
+        binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
+                if(binding.searchName.text.toString().isNotBlank()) {
+                    val bottomSheetFragment = SearchParkingLotFragment(binding.searchName.text.toString())
+                    bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+                }
+            }
+            true
+        }
+        binding.searchIcon.setOnClickListener {
+            if(binding.searchName.text.toString().isNotBlank()) {
+
+            }
+        }
 
 //        key hash 확인용 코드
 //        var packageInfo: PackageInfo? = null
@@ -128,11 +147,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //
 //            }
 //        }
-
-
-
-
-
     }
 
 
@@ -334,6 +348,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onFlushComplete(requestCode)
             //플러시 작업이 완료되고 플러시된 위치가 전달된 후 호출됩니다.
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        closeKeyboard()
+        return super.dispatchTouchEvent(ev)
+    }
+
+    //    edittext의 키보드 제거
+    fun closeKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
     }
 
 
