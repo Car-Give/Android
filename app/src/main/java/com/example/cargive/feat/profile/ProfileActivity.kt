@@ -17,5 +17,11 @@ class ProfileActivity : AppCompatActivity() {
             val intent=Intent(this,BookmarkActivity::class.java)
             startActivity(intent)
         }
+        binding.profileCar.setOnClickListener {
+            val intent=Intent(this,ProfilecarActivity::class.java)
+            startActivity(intent)
+        }
+        binding.back.setOnClickListener { finish() }
+
     }
 }
