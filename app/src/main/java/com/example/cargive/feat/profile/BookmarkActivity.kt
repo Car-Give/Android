@@ -20,6 +20,7 @@ class BookmarkActivity : AppCompatActivity() {
         binding.listBmark.setHasFixedSize(true)
 
         binding.listBmark.adapter=ProfileAdapter(profileList)
+        binding.back.setOnClickListener { finish() }
 
     }
 }
