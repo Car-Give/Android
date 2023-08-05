@@ -20,6 +20,8 @@ android {
         buildConfigField("String", "api", properties.getProperty("kakaoUrl"))
         buildConfigField("String", "appKey", properties.getProperty("appKey"))
         buildConfigField("String", "restKey", properties.getProperty("restKey"))
+        buildConfigField("String", "google", properties.getProperty("googleUrl"))
+        buildConfigField("String", "webKey", properties.getProperty("webKey"))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
