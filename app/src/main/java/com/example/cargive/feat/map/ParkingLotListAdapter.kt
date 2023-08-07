@@ -42,6 +42,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             val pLocation = Location("place")
             pLocation.latitude = datas.geometry.location.lat
             pLocation.longitude = datas.geometry.location.lng
+            Log.d("place_id", datas.place_id)
 
             val distance = cLocation.distanceTo(pLocation)
             binding.placeDistance.text = distance.roundToInt().toString()+"m"
@@ -78,7 +79,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                         Log.d("장소 결과", "No photo metadata.")
                         return@addOnSuccessListener
                     }
-                    val photoMetadata = metada.first()
+                    val photoMetadata = metada.last()
                     // Get the attribution text.
                     val attributions = photoMetadata?.attributions
 
