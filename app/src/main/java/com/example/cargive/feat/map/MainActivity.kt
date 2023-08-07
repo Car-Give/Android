@@ -301,10 +301,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 val result = resultDeferred.await()
                 Log.d("search result", result.toString())
-                withContext(Dispatchers.Main) {
-                    val bottomSheetFragment =
-                        SearchParkingLotFragment(keyword)
-                    bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+                result?.let {
+                    withContext(Dispatchers.Main) {
+                        val bottomSheetFragment =
+                            SearchParkingLotFragment(keyword, result.results, placesClient, latitude, longitude)
+                        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+                    }
                 }
             }
         }

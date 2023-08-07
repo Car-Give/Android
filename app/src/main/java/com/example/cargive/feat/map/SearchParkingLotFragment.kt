@@ -1,7 +1,10 @@
 package com.example.cargive.feat.map
 
 import android.R
+import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,10 +13,20 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cargive.databinding.FragementChooseParkinglotBinding
+import com.example.cargive.model.network.google.search.Results
+import com.google.android.gms.common.api.ApiException
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.PlaceLikelihood
+import com.google.android.libraries.places.api.net.*
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class SearchParkingLotFragment(private val name: String) : BottomSheetDialogFragment() {
+class SearchParkingLotFragment(
+    private val name: String, private val arr: List<Results>, private val client: PlacesClient,
+    private val latitude: Double, private val longitude: Double
+) : BottomSheetDialogFragment() {
     private lateinit var binding: FragementChooseParkinglotBinding
+    private var sortedPlaces = mutableListOf<Results>()
+    private lateinit var location: Location
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -22,46 +35,90 @@ class SearchParkingLotFragment(private val name: String) : BottomSheetDialogFrag
         binding = FragementChooseParkinglotBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.searchPlaceName.text = name
-        val adapter = ParkingLotListAdapter(arrayListOf("1","2","3","4","5","6","7","8"))
+        sortPlace()
+
+    }
+
+    private fun sortPlace() {
+        location = Location("Current Location")
+        location.longitude = longitude
+        location.latitude = latitude
+//        val placeFields =
+//            listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.TYPES)
+//        val request = FindCurrentPlaceRequest.builder(placeFields).build()
+//
+//        client.findCurrentPlace(request).addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                val response = task.result
+//                response?.let { likelyPlaces ->
+//                    sortedPlaces = likelyPlaces.placeLikelihoods
+//                        .sortedBy {
+//                            val placeLocation = Location("place")
+//                            placeLocation.latitude = it.place.latLng.latitude
+//                            placeLocation.longitude = it.place.latLng.longitude
+//                            Log.d("type", "type: ${it.place.types}")
+//                            location.distanceTo(placeLocation)
+//                        }
+//                    Log.d("정렬 결과", "sorted: $sortedPlaces")
+//                }
+//            } else {
+//                // Handle the error
+//            }
+//        }
+        val sorted = arr.sortedBy {
+            val placeLocation = Location("place")
+            placeLocation.latitude = it.geometry.location.lat
+            placeLocation.longitude = it.geometry.location.lng
+            location.distanceTo(placeLocation)
+        }
+        Log.d("정렬됨", "sorted: $sortedPlaces")
+        initRecycler(sorted)
+    }
+
+    private fun initRecycler(sorted: List<Results>) {
+        val adapter = ParkingLotListAdapter(location, client)
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(requireContext())
-        val arr1 : MutableList<String> = mutableListOf("추천 순", "인기 순", "거리 순")
+        adapter.submitList(sorted)
+        val arr1: MutableList<String> = mutableListOf("거리 순", "추천 순", "인기 순")
         binding.sortSpinner
-        val spinnerAdapter = ArrayAdapter<String>(requireContext(), R.layout.simple_list_item_1, arr1)
-        binding.sortSpinner.adapter =spinnerAdapter
+        val spinnerAdapter =
+            ArrayAdapter<String>(requireContext(), R.layout.simple_list_item_1, arr1)
+        binding.sortSpinner.adapter = spinnerAdapter
         binding.sortSpinner.setSelection(0)
-        binding.sortSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                when(position) {
-                    0 -> {
+        binding.sortSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    when (position) {
+                        0 -> {
 
-                    }
-                    1-> {
+                        }
+                        1 -> {
 
-                    }
-                    2 -> {
+                        }
+                        2 -> {
 
-                    }
-                    else -> {
+                        }
+                        else -> {
 
+                        }
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-        }
-
-
     }
 }

@@ -26,10 +26,10 @@ class GoogleRepository {
 
     fun getPlaceInfoByQuery(keyword: String, latitude: Double, longitude: Double): GooglePlaceSearchModel? {
         val queryMap = mutableMapOf<String, String>()
-        queryMap.put("keyword","주차장")
+        queryMap.put("keyword", keyword)
         queryMap.put("type", "parking")
         queryMap.put("radius", "2000")
-        queryMap.put("location","37.3411436,126.732770474")
+        queryMap.put("location","$latitude,$longitude")
 //        queryMap.put("rankby","distance")
         queryMap.put("key", BuildConfig.webKey)
 
