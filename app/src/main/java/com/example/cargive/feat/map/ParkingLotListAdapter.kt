@@ -55,14 +55,23 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                 Place.Field.NAME,
                 Place.Field.ADDRESS,
                 Place.Field.PHONE_NUMBER,
-                Place.Field.PHOTO_METADATAS
+                Place.Field.PHOTO_METADATAS,
+                Place.Field.PRICE_LEVEL,
+                Place.Field.WEBSITE_URI
             )
             val request = FetchPlaceRequest.newInstance(datas.place_id, placeFields)
 
             client.fetchPlace(request)
                 .addOnSuccessListener { response: FetchPlaceResponse ->
                     val place = response.place
-
+//                    Log.d("name", "장소? : ${place.name}")
+//                    Log.d("name", "주소? : ${place.address}")
+//                    Log.d("plus", "phone?: ${place.phoneNumber}")
+//                    Log.d("price", "price?: ${place.priceLevel}")
+//                    Log.d("price", "uri?: ${place.websiteUri}")
+                    binding.internalCall.text = place.phoneNumber
+                    binding.detailAddress.text = place.address
+//                    Log.d("name", place.name)
                     // Get the photo metadata.
                     val metada = place.photoMetadatas
                     if (metada == null || metada.isEmpty()) {
@@ -70,16 +79,13 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                         return@addOnSuccessListener
                     }
                     val photoMetadata = metada.first()
-                    Log.d("주소", "장소? : ${place.name}")
-                    Log.d("주소", "주소? : ${place.address}")
-                    binding.detailAddress.text = place.address
                     // Get the attribution text.
                     val attributions = photoMetadata?.attributions
 
                     // Create a FetchPhotoRequest.
                     val photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(500) // Optional.
-                        .setMaxHeight(300) // Optional.
+                        .setMaxWidth(binding.placeImg.maxWidth) // Optional.
+                        .setMaxHeight(binding.placeImg.maxWidth) // Optional.
                         .build()
                     client.fetchPhoto(photoRequest)
                         .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
@@ -92,6 +98,9 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                                 TODO("Handle error with given status code.")
                             }
                         }
+                }
+                .addOnFailureListener {
+                    Log.e("place", "Place not found: " + it.message)
                 }
 
 

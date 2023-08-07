@@ -1,6 +1,5 @@
 package com.example.cargive.feat.map
 
-import android.R
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
@@ -12,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.R
 import com.example.cargive.databinding.FragementChooseParkinglotBinding
 import com.example.cargive.model.network.google.search.Results
 import com.google.android.gms.common.api.ApiException
