@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.cargive">
 
     <application
         android:allowBackup="true"
@@ -11,21 +11,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         tools:targetApi="33">
+
+        <!-- IntroActivity를 메인 액티비티로 지정 -->
         <activity
-            android:name=".IntroActivity"
-            android:exported="false" />
-        <activity
-            android:name=".feat.login.LoginActivity"
+            android:name="com.example.cargive.feat.login.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- LoginActivity와 MainActivity 등 다른 액티비티 선언 -->
         <activity
-            android:name=".feat.map.MainActivity"
+            android:name="com.example.cargive.feat.login.LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.cargive.feat.map.MainActivity"
             android:exported="false" />
     </application>
-
 </manifest>
