@@ -1,8 +1,11 @@
 package com.example.cargive.feat.map
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.location.Location
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -14,7 +17,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.*
 import kotlin.math.roundToInt
 
-class ParkingLotListAdapter(private val cLocation: Location, private val client: PlacesClient):
+class ParkingLotListAdapter(private val cLocation: Location, private val client: PlacesClient, private val activity: Context):
     ListAdapter<Results, ParkingLotListAdapter.ViewHolder>(DiffCallBack) {
 
     companion object {
@@ -39,13 +42,20 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
     inner class ViewHolder(private val binding: ParkingLotListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(datas: Results){
             binding.placeName.text = datas.name
+            var bitmap: Bitmap? = null
+            var phoneNumber: String = ""
+            var address: String = ""
             val pLocation = Location("place")
             pLocation.latitude = datas.geometry.location.lat
             pLocation.longitude = datas.geometry.location.lng
             Log.d("place_id", datas.place_id)
+            val distance = cLocation.distanceTo(pLocation).roundToInt()
+            binding.placeDistance.text = distance.toString()+"m"
+            binding.placeInfoFrame.setOnClickListener {
+                val main = activity as MainActivity
+                main.showPlaceNav(datas, distance, bitmap, phoneNumber, address)
+            }
 
-            val distance = cLocation.distanceTo(pLocation)
-            binding.placeDistance.text = distance.roundToInt().toString()+"m"
 
 //            val placeFields = mutableListOf(Place.Field.ID, Place.Field.NAME)
 //            val request = FetchPlaceRequest.newInstance(datas.place_id, placeFields)
@@ -70,8 +80,14 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
 //                    Log.d("plus", "phone?: ${place.phoneNumber}")
 //                    Log.d("price", "price?: ${place.priceLevel}")
 //                    Log.d("price", "uri?: ${place.websiteUri}")
-                    binding.internalCall.text = place.phoneNumber
+                    if(place.phoneNumber.isNullOrBlank()) {
+                        binding.callFrame.visibility = View.GONE
+                    } else {
+                        binding.internalCall.text = place.phoneNumber
+                        phoneNumber = place.phoneNumber as String
+                    }
                     binding.detailAddress.text = place.address
+                    address = place.address as String
 //                    Log.d("name", place.name)
                     // Get the photo metadata.
                     val metada = place.photoMetadatas
@@ -90,7 +106,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                         .build()
                     client.fetchPhoto(photoRequest)
                         .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
-                            val bitmap = fetchPhotoResponse.bitmap
+                            bitmap = fetchPhotoResponse.bitmap
                             binding.placeImg.setImageBitmap(bitmap)
                         }.addOnFailureListener { exception: Exception ->
                             if (exception is ApiException) {
@@ -107,6 +123,8 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
 
 
         }
+
+
 
     }
     override fun getItemViewType(position: Int): Int {

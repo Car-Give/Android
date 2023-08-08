@@ -3,25 +3,21 @@ package com.example.cargive.feat.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,20 +26,19 @@ import com.example.cargive.BuildConfig
 import com.example.cargive.R
 import com.example.cargive.databinding.ActivityMainBinding
 import com.example.cargive.databinding.MainNavheaderBinding
+import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
 import com.example.cargive.model.network.google.search.GoogleRepository
+import com.example.cargive.model.network.google.search.Results
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
-import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.api.net.*
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.*
 
@@ -59,6 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val REQUEST_PERMISSION_CODE = 1
     private var googleMap: GoogleMap? = null
     private var cMarker: Marker? = null
+    private var pMarker: Marker? = null
 
     private var cameraPosition: CameraPosition? = null
     private lateinit var placesClient: PlacesClient
@@ -73,6 +69,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var nav: MainNavheaderBinding
+    private var placeListFragment: SearchParkingLotFragment? = null
+//    private var placeNavFragment: NavParkingLotFragment? = null
+    private var lastSearch = ""
     private var latitude = 0.0
     private var longitude = 0.0
     private lateinit var locationManager: LocationManager
@@ -135,6 +134,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (i == EditorInfo.IME_ACTION_SEARCH) {
                 if (binding.searchName.text.toString().isNotBlank()) {
                     searchPlaces(binding.searchName.text.toString())
+                    lastSearch = binding.searchName.text.toString()
+                    binding.searchName.setText("")
                 }
             }
             true
@@ -142,7 +143,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchIcon.setOnClickListener {
             if (binding.searchName.text.toString().isNotBlank()) {
                 searchPlaces(binding.searchName.text.toString())
+                lastSearch = binding.searchName.text.toString()
+                binding.searchName.setText("")
             }
+        }
+
+        binding.findCar.setOnClickListener {
+
+        }
+        binding.findParkingLot.setOnClickListener {
+            binding.choiceFrame.visibility = View.GONE
+            binding.toolbar.visibility = View.VISIBLE
         }
 
 //        key hash 확인용 코드
@@ -178,118 +189,118 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        }
 //    }
 
-    @SuppressLint("MissingPermission")
-    private fun showCurrentPlace() {
-        val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-
-        // Use the builder to create a FindCurrentPlaceRequest.
-        val request = FindCurrentPlaceRequest.newInstance(placeFields)
-
-        // Get the likely places - that is, the businesses and other points of interest that
-        // are the best match for the device's current location.
-        val placeResult = placesClient.findCurrentPlace(request)
-        placeResult.addOnCompleteListener { task ->
-            if (task.isSuccessful && task.result != null) {
-                val likelyPlaces = task.result
-
-                // Set the count, handling cases where less than 5 entries are returned.
-                val count = if (likelyPlaces != null && likelyPlaces.placeLikelihoods.size < M_MAX_ENTRIES) {
-                    likelyPlaces.placeLikelihoods.size
-                } else {
-                    M_MAX_ENTRIES
-                }
-                var i = 0
-                likelyPlaceNames = arrayOfNulls(count)
-                likelyPlaceAddresses = arrayOfNulls(count)
-                likelyPlaceAttributions = arrayOfNulls<List<*>?>(count)
-                likelyPlaceLatLngs = arrayOfNulls(count)
-                for (placeLikelihood in likelyPlaces?.placeLikelihoods ?: emptyList()) {
-                    // Build a list of likely places to show the user.
-                    likelyPlaceNames[i] = placeLikelihood.place.name
-                    likelyPlaceAddresses[i] = placeLikelihood.place.address
-                    likelyPlaceAttributions[i] = placeLikelihood.place.attributions
-                    likelyPlaceLatLngs[i] = placeLikelihood.place.latLng
-                    i++
-                    if (i > count - 1) {
-                        break
-                    }
-                }
-
-                // Show a dialog offering the user the list of likely places, and add a
-                // marker at the selected place.
-                openPlacesDialog()
-            } else {
-                Log.e(TAG, "Exception: %s", task.exception)
-            }
-        }
-    }
-
-    private fun openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
-        val listener = DialogInterface.OnClickListener { dialog, which -> // The "which" argument contains the position of the selected item.
-            val markerLatLng = likelyPlaceLatLngs[which]
-            var markerSnippet = likelyPlaceAddresses[which]
-            if (likelyPlaceAttributions[which] != null) {
-                markerSnippet = """
-                    $markerSnippet
-                    ${likelyPlaceAttributions[which]}
-                    """.trimIndent()
-            }
-
-            if (markerLatLng == null) {
-                return@OnClickListener
-            }
-
-            // Add a marker for the selected place, with an info window
-            // showing information about that place.
-            googleMap?.addMarker(MarkerOptions()
-                .title(likelyPlaceNames[which])
-                .position(markerLatLng)
-                .snippet(markerSnippet))
-
-            // Position the map's camera at the location of the marker.
-            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
-                DEFAULT_ZOOM.toFloat()))
-        }
-
-        // Display the dialog.
-        AlertDialog.Builder(this)
-            .setTitle("choose a place")
-            .setItems(likelyPlaceNames, listener)
-            .show()
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getDeviceLocation() {
-        val locationResult = fusedLocationClient.lastLocation
-        locationResult.addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                // Set the map's camera position to the current location of the device.
-                lastKnownLocation = task.result
-                if (lastKnownLocation != null) {
-                    googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        LatLng(lastKnownLocation!!.latitude,
-                            lastKnownLocation!!.longitude), DEFAULT_ZOOM.toFloat()))
-                }
-            } else {
-                Log.d(TAG, "Current location is null. Using defaults.")
-                Log.e(TAG, "Exception: %s", task.exception)
-                googleMap?.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
-                googleMap?.uiSettings?.isMyLocationButtonEnabled = false
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun updateLocation() {
-        try {
-            googleMap?.isMyLocationEnabled = true
-//            googleMap?.uiSettings?.isMyLocationButtonEnabled = true
-        } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
-        }
-    }
+//    @SuppressLint("MissingPermission")
+//    private fun showCurrentPlace() {
+//        val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+//
+//        // Use the builder to create a FindCurrentPlaceRequest.
+//        val request = FindCurrentPlaceRequest.newInstance(placeFields)
+//
+//        // Get the likely places - that is, the businesses and other points of interest that
+//        // are the best match for the device's current location.
+//        val placeResult = placesClient.findCurrentPlace(request)
+//        placeResult.addOnCompleteListener { task ->
+//            if (task.isSuccessful && task.result != null) {
+//                val likelyPlaces = task.result
+//
+//                // Set the count, handling cases where less than 5 entries are returned.
+//                val count = if (likelyPlaces != null && likelyPlaces.placeLikelihoods.size < M_MAX_ENTRIES) {
+//                    likelyPlaces.placeLikelihoods.size
+//                } else {
+//                    M_MAX_ENTRIES
+//                }
+//                var i = 0
+//                likelyPlaceNames = arrayOfNulls(count)
+//                likelyPlaceAddresses = arrayOfNulls(count)
+//                likelyPlaceAttributions = arrayOfNulls<List<*>?>(count)
+//                likelyPlaceLatLngs = arrayOfNulls(count)
+//                for (placeLikelihood in likelyPlaces?.placeLikelihoods ?: emptyList()) {
+//                    // Build a list of likely places to show the user.
+//                    likelyPlaceNames[i] = placeLikelihood.place.name
+//                    likelyPlaceAddresses[i] = placeLikelihood.place.address
+//                    likelyPlaceAttributions[i] = placeLikelihood.place.attributions
+//                    likelyPlaceLatLngs[i] = placeLikelihood.place.latLng
+//                    i++
+//                    if (i > count - 1) {
+//                        break
+//                    }
+//                }
+//
+//                // Show a dialog offering the user the list of likely places, and add a
+//                // marker at the selected place.
+//                openPlacesDialog()
+//            } else {
+//                Log.e(TAG, "Exception: %s", task.exception)
+//            }
+//        }
+//    }
+//
+//    private fun openPlacesDialog() {
+//        // Ask the user to choose the place where they are now.
+//        val listener = DialogInterface.OnClickListener { dialog, which -> // The "which" argument contains the position of the selected item.
+//            val markerLatLng = likelyPlaceLatLngs[which]
+//            var markerSnippet = likelyPlaceAddresses[which]
+//            if (likelyPlaceAttributions[which] != null) {
+//                markerSnippet = """
+//                    $markerSnippet
+//                    ${likelyPlaceAttributions[which]}
+//                    """.trimIndent()
+//            }
+//
+//            if (markerLatLng == null) {
+//                return@OnClickListener
+//            }
+//
+//            // Add a marker for the selected place, with an info window
+//            // showing information about that place.
+//            googleMap?.addMarker(MarkerOptions()
+//                .title(likelyPlaceNames[which])
+//                .position(markerLatLng)
+//                .snippet(markerSnippet))
+//
+//            // Position the map's camera at the location of the marker.
+//            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
+//                DEFAULT_ZOOM.toFloat()))
+//        }
+//
+//        // Display the dialog.
+//        AlertDialog.Builder(this)
+//            .setTitle("choose a place")
+//            .setItems(likelyPlaceNames, listener)
+//            .show()
+//    }
+//
+//    @SuppressLint("MissingPermission")
+//    private fun getDeviceLocation() {
+//        val locationResult = fusedLocationClient.lastLocation
+//        locationResult.addOnCompleteListener(this) { task ->
+//            if (task.isSuccessful) {
+//                // Set the map's camera position to the current location of the device.
+//                lastKnownLocation = task.result
+//                if (lastKnownLocation != null) {
+//                    googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                        LatLng(lastKnownLocation!!.latitude,
+//                            lastKnownLocation!!.longitude), DEFAULT_ZOOM.toFloat()))
+//                }
+//            } else {
+//                Log.d(TAG, "Current location is null. Using defaults.")
+//                Log.e(TAG, "Exception: %s", task.exception)
+//                googleMap?.moveCamera(CameraUpdateFactory
+//                    .newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
+//                googleMap?.uiSettings?.isMyLocationButtonEnabled = false
+//            }
+//        }
+//    }
+//
+//    @SuppressLint("MissingPermission")
+//    private fun updateLocation() {
+//        try {
+//            googleMap?.isMyLocationEnabled = true
+////            googleMap?.uiSettings?.isMyLocationButtonEnabled = true
+//        } catch (e: SecurityException) {
+//            Log.e("Exception: %s", e.message, e)
+//        }
+//    }
 
 
     private fun searchPlaces(keyword: String) {
@@ -303,13 +314,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Log.d("search result", result.toString())
                 result?.let {
                     withContext(Dispatchers.Main) {
-                        val bottomSheetFragment =
-                            SearchParkingLotFragment(keyword, result.results, placesClient, latitude, longitude)
-                        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+                        showPlaceList(keyword, latitude, longitude, result)
                     }
                 }
             }
         }
+    }
+
+    fun showPlaceList(keyword: String, pLatitude: Double, pLongitude: Double, result: GooglePlaceSearchModel) {
+        placeListFragment =
+            SearchParkingLotFragment(keyword, result.results, placesClient, pLatitude, pLongitude, this)
+        placeListFragment?.show(supportFragmentManager, placeListFragment?.tag)
+    }
+
+    fun showPlaceNav(result: Results, distance: Int, bitmap: Bitmap?, phoneNumber: String, address: String) {
+        placeListFragment?.dismiss()
+        removePlaceMarker()
+        addPlaceMarker(result.geometry.location.lat, result.geometry.location.lng)
+        binding.placeName.text = result.name
+
+        bitmap?.let {
+            binding.placeImg.setImageBitmap(it)
+        }
+        binding.internalCall.text = phoneNumber
+        binding.detailAddress.text = address
+
+        binding.placeDistance.text = distance.toString()+"m"
+        binding.placeInfoFrame.visibility = View.VISIBLE
+//        placeNavFragment = NavParkingLotFragment(result, placesClient, cLocation)
+//        placeNavFragment?.show(supportFragmentManager, placeNavFragment?.tag)
     }
 
     private fun setNavListener() {
@@ -463,19 +496,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
     }
 
-    fun getMarkerIconFromDrawable(drawable: Drawable?): BitmapDescriptor {
-        val canvas = Canvas()
-        val bitmap = Bitmap.createBitmap(
-            drawable?.intrinsicWidth ?: 0,
-            drawable?.intrinsicHeight ?: 0,
-            Bitmap.Config.ARGB_8888
-        )
-        canvas.setBitmap(bitmap)
-        drawable?.setBounds(0, 0, canvas.width, canvas.height)
-        drawable?.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
-
     @SuppressLint("MissingPermission")
     fun setLocationUpdates() {
         locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -498,9 +518,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (longitude != 0.0 && latitude != 0.0) {
                     if (cMarker != null) {
                         cMarker?.remove()
-                    } else {
-                        it.clear()
                     }
+
                     val markerIcon = getMarkerIconFromDrawable(
                         ContextCompat.getDrawable(
                             this@MainActivity,
@@ -540,6 +559,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onFlushComplete(requestCode)
             //플러시 작업이 완료되고 플러시된 위치가 전달된 후 호출됩니다.
         }
+    }
+
+    fun getMarkerIconFromDrawable(drawable: Drawable?): BitmapDescriptor {
+        val canvas = Canvas()
+        val bitmap = Bitmap.createBitmap(
+            drawable?.intrinsicWidth ?: 0,
+            drawable?.intrinsicHeight ?: 0,
+            Bitmap.Config.ARGB_8888
+        )
+        canvas.setBitmap(bitmap)
+        drawable?.setBounds(0, 0, canvas.width, canvas.height)
+        drawable?.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+    fun addPlaceMarker(pLat: Double, pLng: Double) {
+        googleMap?.let {
+            val markerIcon = getMarkerIconFromDrawable(
+                ContextCompat.getDrawable(
+                    this@MainActivity,
+                    R.drawable.parking_location
+                )
+            )
+            val marker = LatLng(pLat, pLng)
+            val markerOptions = MarkerOptions()
+                .position(marker)
+                .icon(markerIcon)
+                .anchor(0.5f, 1.0f)
+            pMarker = it.addMarker(markerOptions)
+        }
+    }
+
+    fun removePlaceMarker() {
+        pMarker?.remove()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

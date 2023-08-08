@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.R
+import android.content.Context
 import com.example.cargive.databinding.FragementChooseParkinglotBinding
 import com.example.cargive.model.network.google.search.Results
 import com.google.android.gms.common.api.ApiException
@@ -22,7 +23,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SearchParkingLotFragment(
     private val name: String, private val arr: List<Results>, private val client: PlacesClient,
-    private val latitude: Double, private val longitude: Double
+    private val latitude: Double, private val longitude: Double, private val context: Context
 ) : BottomSheetDialogFragment() {
     private lateinit var binding: FragementChooseParkinglotBinding
     private var sortedPlaces = mutableListOf<Results>()
@@ -81,7 +82,7 @@ class SearchParkingLotFragment(
     }
 
     private fun initRecycler(sorted: List<Results>) {
-        val adapter = ParkingLotListAdapter(location, client)
+        val adapter = ParkingLotListAdapter(location, client, context)
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(requireContext())
         adapter.submitList(sorted)
