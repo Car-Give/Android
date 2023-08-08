@@ -26,7 +26,6 @@ class SearchParkingLotFragment(
     private val latitude: Double, private val longitude: Double, private val context: Context
 ) : BottomSheetDialogFragment() {
     private lateinit var binding: FragementChooseParkinglotBinding
-    private var sortedPlaces = mutableListOf<Results>()
     private lateinit var location: Location
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +40,7 @@ class SearchParkingLotFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.searchPlaceName.text = name
-        sortPlace()
+        initSpinner()
 
     }
 
@@ -71,21 +70,21 @@ class SearchParkingLotFragment(
 //                // Handle the error
 //            }
 //        }
-        val sorted = arr.sortedBy {
-            val placeLocation = Location("place")
-            placeLocation.latitude = it.geometry.location.lat
-            placeLocation.longitude = it.geometry.location.lng
-            location.distanceTo(placeLocation)
+        if(arr.isNotEmpty()) {
+            val sorted = arr.sortedBy {
+                val placeLocation = Location("place")
+                placeLocation.latitude = it.geometry.location.lat
+                placeLocation.longitude = it.geometry.location.lng
+                location.distanceTo(placeLocation)
+            }
+            Log.d("정렬됨", "sorted: $sorted")
+            initRecycler(sorted)
+        } else {
+            binding.searchResult.visibility = View.GONE
+            binding.cautionFrame.visibility = View.VISIBLE
         }
-        Log.d("정렬됨", "sorted: $sortedPlaces")
-        initRecycler(sorted)
     }
-
-    private fun initRecycler(sorted: List<Results>) {
-        val adapter = ParkingLotListAdapter(location, client, context)
-        binding.searchResult.adapter = adapter
-        binding.searchResult.layoutManager = LinearLayoutManager(requireContext())
-        adapter.submitList(sorted)
+    private fun initSpinner() {
         val arr1: MutableList<String> = mutableListOf("거리 순", "추천 순", "인기 순")
         binding.sortSpinner
         val spinnerAdapter =
@@ -121,5 +120,14 @@ class SearchParkingLotFragment(
                 }
 
             }
+        sortPlace()
+    }
+
+    private fun initRecycler(sorted: List<Results>) {
+        binding.searchResult.visibility = View.VISIBLE
+        val adapter = ParkingLotListAdapter(location, client, context)
+        binding.searchResult.adapter = adapter
+        binding.searchResult.layoutManager = LinearLayoutManager(requireContext())
+        adapter.submitList(sorted)
     }
 }
