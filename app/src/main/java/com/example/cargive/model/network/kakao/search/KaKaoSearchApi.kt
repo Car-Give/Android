@@ -1,4 +1,4 @@
-package com.example.cargive.model.network.search
+package com.example.cargive.model.network.kakao.search
 
 import retrofit2.Call
 import retrofit2.http.GET

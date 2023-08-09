@@ -1,4 +1,4 @@
-package com.example.cargive.model.network.search
+package com.example.cargive.model.network.kakao.search
 
 data class Meta(
     val is_end: Boolean,

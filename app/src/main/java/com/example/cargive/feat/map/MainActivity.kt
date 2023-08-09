@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
@@ -29,7 +30,6 @@ import com.example.cargive.databinding.MainNavheaderBinding
 import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
 import com.example.cargive.model.network.google.search.GoogleRepository
 import com.example.cargive.model.network.google.search.Results
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -40,6 +40,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.*
 import com.google.android.material.navigation.NavigationView
+import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.*
 
 
@@ -55,6 +56,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var googleMap: GoogleMap? = null
     private var cMarker: Marker? = null
     private var pMarker: Marker? = null
+    private var currentId: String? = null
+    private var placeId: String? = null
+
 
     private var cameraPosition: CameraPosition? = null
     private lateinit var placesClient: PlacesClient
@@ -70,6 +74,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var binding: ActivityMainBinding
     private lateinit var nav: MainNavheaderBinding
     private var placeListFragment: SearchParkingLotFragment? = null
+    private var polyline: Polyline? = null
 //    private var placeNavFragment: NavParkingLotFragment? = null
     private var lastSearch = ""
     private var latitude = 0.0
@@ -81,21 +86,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 binding.drawerLayout.closeDrawers()
             } else {
-                if (System.currentTimeMillis() > backPressed + 2500) {
-                    backPressed = System.currentTimeMillis()
-                    Toast.makeText(
-                        applicationContext,
-                        "Back 버튼을 한번 더 누르면 종료합니다.",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    return
-                }
+                if(binding.placeInfoFrame.visibility == View.VISIBLE) {
+                    binding.placeInfoFrame.visibility = View.GONE
+                } else {
+                    if(polyline != null) {
+                        polyline?.remove()
+                        polyline = null
+                    } else {
+                        if (System.currentTimeMillis() > backPressed + 2500) {
+                            backPressed = System.currentTimeMillis()
+                            Toast.makeText(
+                                applicationContext,
+                                "Back 버튼을 한번 더 누르면 종료합니다.",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            return
+                        }
 
-                if (System.currentTimeMillis() <= backPressed + 2500) {
-                    moveTaskToBack(true)
-                    finishAndRemoveTask()
-                    android.os.Process.killProcess(android.os.Process.myPid())
+                        if (System.currentTimeMillis() <= backPressed + 2500) {
+                            moveTaskToBack(true)
+                            finishAndRemoveTask()
+                            android.os.Process.killProcess(android.os.Process.myPid())
+                        }
+                    }
                 }
             }
         }
@@ -321,13 +335,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun routePlace() {
+        Log.d("place", "placeId: $placeId")
+        val coroutine = CoroutineScope(Dispatchers.IO)
+        coroutine.launch {
+            if (!this@MainActivity.isFinishing && !placeId.isNullOrBlank() && !currentId.isNullOrBlank()) {
+                val resultDeferred = coroutine.async {
+                    repository.getPlaceRouteResult(latitude, longitude, placeId!!)
+                }
+                val result = resultDeferred.await()
+                Log.d("search result", result.toString())
+                result?.let {
+                    withContext(Dispatchers.Main) {
+                        val polylineOptions = PolylineOptions()
+                        polylineOptions.addAll(PolyUtil.decode(it.routes[0].overview_polyline.points))
+                        polylineOptions.color(Color.BLUE)
+                        polyline = googleMap?.addPolyline(polylineOptions)
+                    }
+                }
+                binding.placeInfoFrame.visibility = View.VISIBLE
+            }
+        }
+    }
+
     fun showPlaceList(keyword: String, pLatitude: Double, pLongitude: Double, result: GooglePlaceSearchModel) {
         placeListFragment =
             SearchParkingLotFragment(keyword, result.results, placesClient, pLatitude, pLongitude, this)
         placeListFragment?.show(supportFragmentManager, placeListFragment?.tag)
     }
 
-    fun showPlaceNav(result: Results, distance: Int, bitmap: Bitmap?, phoneNumber: String, address: String) {
+    fun showPlaceNav(result: Results, distance: Int, bitmap: Bitmap?, phoneNumber: String, address: String, placeId: String) {
         placeListFragment?.dismiss()
         removePlaceMarker()
         addPlaceMarker(result.geometry.location.lat, result.geometry.location.lng)
@@ -336,14 +373,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         bitmap?.let {
             binding.placeImg.setImageBitmap(it)
         }
+        this.placeId = placeId
         binding.internalCall.text = phoneNumber
         binding.detailAddress.text = address
 
         binding.placeDistance.text = distance.toString()+"m"
         binding.placeInfoFrame.visibility = View.VISIBLE
+        binding.navigatePlace.setOnClickListener {
+            routePlace()
+        }
+
 //        placeNavFragment = NavParkingLotFragment(result, placesClient, cLocation)
 //        placeNavFragment?.show(supportFragmentManager, placeNavFragment?.tag)
     }
+
+
 
     private fun setNavListener() {
         nav.profileLink.setOnClickListener {
@@ -485,8 +529,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             cMarker = it.addMarker(markerOptions)
                             it.moveCamera(CameraUpdateFactory.newLatLng(marker))
                             it.moveCamera(CameraUpdateFactory.zoomTo(15f))
-                            setLocationUpdates()
-//                            Handler(Looper.getMainLooper()).postDelayed({added?.remove()}, 3000)
+                            val placesClient = Places.createClient(this)
+                            val request = FindCurrentPlaceRequest.builder(listOf(Place.Field.ID))
+                                .build()
+
+                            placesClient.findCurrentPlace(request)
+                                .addOnSuccessListener { response ->
+                                    if (response.placeLikelihoods.isNotEmpty()) {
+                                        currentId = response.placeLikelihoods[0].place.id
+                                        Log.d("place", currentId.toString())
+                                        // 얻은 placeId를 사용하여 장소의 세부 정보를 요청하거나 다른 작업을 수행할 수 있습니다.
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    // 현재 위치 검색 실패 시 처리
+                                }
                         }
                     }
                 }

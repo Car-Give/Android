@@ -1,4 +1,4 @@
-package com.example.cargive.model.network.search
+package com.example.cargive.model.network.kakao.search
 
 import android.util.Log
 import com.example.cargive.BuildConfig

@@ -22,6 +22,7 @@ android {
         buildConfigField("String", "restKey", properties.getProperty("restKey"))
         buildConfigField("String", "google", properties.getProperty("googleUrl"))
         buildConfigField("String", "webKey", properties.getProperty("webKey"))
+        buildConfigField("String", "directionUrl", properties.getProperty("directionUrl"))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -63,6 +64,5 @@ dependencies {
     implementation('com.google.android.gms:play-services-location:21.0.1')
     implementation 'com.google.maps.android:android-maps-utils:0.6.1'
     implementation 'com.google.android.libraries.places:places:3.2.0'
-
 
 }
