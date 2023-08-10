@@ -17,12 +17,15 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cargive.BuildConfig
 import com.example.cargive.R
 import com.example.cargive.databinding.ActivityMainBinding
@@ -58,24 +61,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var pMarker: Marker? = null
     private var currentId: String? = null
     private var placeId: String? = null
+    private lateinit var location: Location
 
 
-    private var cameraPosition: CameraPosition? = null
+    //    private var cameraPosition: CameraPosition? = null
     private lateinit var placesClient: PlacesClient
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private val defaultLocation = LatLng(37.3411, 126.7326)
-    private var likelyPlaceNames: Array<String?> = arrayOfNulls(0)
-    private var likelyPlaceAddresses: Array<String?> = arrayOfNulls(0)
-    private var likelyPlaceAttributions: Array<List<*>?> = arrayOfNulls(0)
-    private var likelyPlaceLatLngs: Array<LatLng?> = arrayOfNulls(0)
+    //    private val defaultLocation = LatLng(37.3411, 126.7326)
+//    private var likelyPlaceNames: Array<String?> = arrayOfNulls(0)
+//    private var likelyPlaceAddresses: Array<String?> = arrayOfNulls(0)
+//    private var likelyPlaceAttributions: Array<List<*>?> = arrayOfNulls(0)
+//    private var likelyPlaceLatLngs: Array<LatLng?> = arrayOfNulls(0)
     private var lastKnownLocation: Location? = null
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var nav: MainNavheaderBinding
     private var placeListFragment: SearchParkingLotFragment? = null
     private var polyline: Polyline? = null
-//    private var placeNavFragment: NavParkingLotFragment? = null
+
+    //    private var placeNavFragment: NavParkingLotFragment? = null
     private var lastSearch = ""
     private var latitude = 0.0
     private var longitude = 0.0
@@ -86,28 +91,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 binding.drawerLayout.closeDrawers()
             } else {
-                if(binding.placeInfoFrame.visibility == View.VISIBLE) {
-                    binding.placeInfoFrame.visibility = View.GONE
+                if(binding.searchResultFrame.visibility == View.VISIBLE) {
+                    binding.searchResultFrame.visibility = View.GONE
                 } else {
-                    if(polyline != null) {
-                        polyline?.remove()
-                        polyline = null
+                    if (binding.placeInfoFrame.visibility == View.VISIBLE) {
+                        binding.placeInfoFrame.visibility = View.GONE
                     } else {
-                        if (System.currentTimeMillis() > backPressed + 2500) {
-                            backPressed = System.currentTimeMillis()
-                            Toast.makeText(
-                                applicationContext,
-                                "Back 버튼을 한번 더 누르면 종료합니다.",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            return
-                        }
+                        if (polyline != null) {
+                            polyline?.remove()
+                            pMarker?.remove()
+                            polyline = null
+                        } else {
+                            if (System.currentTimeMillis() > backPressed + 2500) {
+                                backPressed = System.currentTimeMillis()
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Back 버튼을 한번 더 누르면 종료합니다.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                                return
+                            }
 
-                        if (System.currentTimeMillis() <= backPressed + 2500) {
-                            moveTaskToBack(true)
-                            finishAndRemoveTask()
-                            android.os.Process.killProcess(android.os.Process.myPid())
+                            if (System.currentTimeMillis() <= backPressed + 2500) {
+                                moveTaskToBack(true)
+                                finishAndRemoveTask()
+                                android.os.Process.killProcess(android.os.Process.myPid())
+                            }
                         }
                     }
                 }
@@ -322,13 +332,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         coroutine.launch {
             if (!this@MainActivity.isFinishing && longitude != 0.0 && latitude != 0.0) {
                 val resultDeferred = coroutine.async {
-                    repository.getPlaceInfoByQuery(keyword = keyword, latitude = latitude, longitude = longitude)
+                    repository.getPlaceInfoByQuery(
+                        keyword = keyword,
+                        latitude = latitude,
+                        longitude = longitude
+                    )
                 }
                 val result = resultDeferred.await()
                 Log.d("search result", result.toString())
                 result?.let {
                     withContext(Dispatchers.Main) {
-                        showPlaceList(keyword, latitude, longitude, result)
+                        closeKeyboard()
+                        sortPlaceList(keyword, result)
                     }
                 }
             }
@@ -358,16 +373,94 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun showPlaceList(keyword: String, pLatitude: Double, pLongitude: Double, result: GooglePlaceSearchModel) {
-        placeListFragment =
-            SearchParkingLotFragment(keyword, result.results, placesClient, pLatitude, pLongitude, this)
-        placeListFragment?.show(supportFragmentManager, placeListFragment?.tag)
+    private fun findMyCar() {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (!this@MainActivity.isFinishing) {
+//                addMyCarMarker()
+            }
+        }
     }
 
-    fun showPlaceNav(result: Results, distance: Int, bitmap: Bitmap?, phoneNumber: String, address: String, placeId: String) {
-        placeListFragment?.dismiss()
+    private fun sortPlaceList(keyword: String, result: GooglePlaceSearchModel) {
+        binding.searchPlaceName.text = keyword
+        location = Location("Current Location")
+        location.longitude = longitude
+        location.latitude = latitude
+        binding.searchResultFrame.visibility = View.VISIBLE
+
+        if (result.results.isNotEmpty()) {
+            val sorted = result.results.sortedBy {
+                val placeLocation = Location("place")
+                placeLocation.latitude = it.geometry.location.lat
+                placeLocation.longitude = it.geometry.location.lng
+                location.distanceTo(placeLocation)
+            }
+            Log.d("정렬됨", "sorted: $sorted")
+            showPlaceList(sorted)
+        } else {
+            binding.searchResult.visibility = View.GONE
+            binding.cautionFrame.visibility = View.VISIBLE
+        }
+    }
+
+    fun showPlaceList(list: List<Results>) {
+//        placeListFragment =
+//            SearchParkingLotFragment(keyword, result.results, placesClient, pLatitude, pLongitude, this)
+//        placeListFragment?.show(supportFragmentManager, placeListFragment?.tag)
+        val arr1: MutableList<String> = mutableListOf("거리 순", "추천 순", "인기 순")
+        binding.sortSpinner
+        val spinnerAdapter =
+            ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr1)
+        binding.sortSpinner.adapter = spinnerAdapter
+        binding.sortSpinner.setSelection(0)
+        binding.sortSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    when (position) {
+                        0 -> {
+
+                        }
+                        1 -> {
+
+                        }
+                        2 -> {
+
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
+            }
+
+        binding.searchResult.visibility = View.VISIBLE
+        val adapter = ParkingLotListAdapter(location, placesClient, this)
+        binding.searchResult.adapter = adapter
+        binding.searchResult.layoutManager = LinearLayoutManager(this)
+        adapter.submitList(list)
+    }
+
+    fun showPlaceNav(
+        result: Results,
+        distance: Int,
+        bitmap: Bitmap?,
+        phoneNumber: String,
+        address: String,
+        placeId: String
+    ) {
+        binding.searchResultFrame.visibility = View.GONE
         removePlaceMarker()
-        addPlaceMarker(result.geometry.location.lat, result.geometry.location.lng)
+        addPlaceMarker(result.geometry.location.lat, result.geometry.location.lng, result.name)
         binding.placeName.text = result.name
 
         bitmap?.let {
@@ -377,7 +470,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.internalCall.text = phoneNumber
         binding.detailAddress.text = address
 
-        binding.placeDistance.text = distance.toString()+"m"
+        binding.placeDistance.text = distance.toString() + "m"
         binding.placeInfoFrame.visibility = View.VISIBLE
         binding.navigatePlace.setOnClickListener {
             routePlace()
@@ -386,7 +479,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        placeNavFragment = NavParkingLotFragment(result, placesClient, cLocation)
 //        placeNavFragment?.show(supportFragmentManager, placeNavFragment?.tag)
     }
-
 
 
     private fun setNavListener() {
@@ -631,7 +723,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-    fun addPlaceMarker(pLat: Double, pLng: Double) {
+    fun addPlaceMarker(pLat: Double, pLng: Double, name: String) {
         googleMap?.let {
             val markerIcon = getMarkerIconFromDrawable(
                 ContextCompat.getDrawable(
@@ -642,6 +734,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val marker = LatLng(pLat, pLng)
             val markerOptions = MarkerOptions()
                 .position(marker)
+                .title(name)
+                .icon(markerIcon)
+                .anchor(0.5f, 1.0f)
+            pMarker = it.addMarker(markerOptions)
+        }
+    }
+
+    fun addMyCarMarker(pLat: Double, pLng: Double) {
+        googleMap?.let {
+            val markerIcon = getMarkerIconFromDrawable(
+                ContextCompat.getDrawable(
+                    this@MainActivity,
+                    R.drawable.mycar_location
+                )
+            )
+            val marker = LatLng(pLat, pLng)
+            val markerOptions = MarkerOptions()
+                .position(marker)
+                .title("내 차!")
                 .icon(markerIcon)
                 .anchor(0.5f, 1.0f)
             pMarker = it.addMarker(markerOptions)
