@@ -1,12 +1,20 @@
 package com.example.cargive.feat.login
 
+import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.cargive.R
+import android.util.Log
+import com.example.cargive.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var viewBinding: ActivityLoginBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        viewBinding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+
+        viewBinding.kakaologinButton.setOnClickListener {
+
+        }
     }
 }

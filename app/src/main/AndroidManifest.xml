@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.cargive">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -30,5 +32,6 @@
         <activity
             android:name="com.example.cargive.feat.map.MainActivity"
             android:exported="false" />
+
     </application>
 </manifest>
