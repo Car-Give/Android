@@ -102,8 +102,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         binding.placeInfoFrame.visibility = View.GONE
                     } else {
                         if (naverPolyline != null) {
-                            naverPolyline?.remove()
-                            pMarker?.remove()
+//                            naverPolyline?.remove()
+//                            pMarker?.remove()
+                            googleMap?.clear()
+                            val markerIcon = getMarkerIconFromDrawable(
+                                ContextCompat.getDrawable(
+                                    this@MainActivity,
+                                    R.drawable.point
+                                )
+                            )
+                            val marker = LatLng(latitude, longitude)
+                            val markerOptions = MarkerOptions()
+                                .position(marker)
+                                .icon(markerIcon)
+                                .anchor(0.5f, 1.0f)
+                            cMarker = googleMap?.addMarker(markerOptions)
                             naverPolyline = null
                         } else {
 
@@ -121,9 +134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             }
 
                             if (System.currentTimeMillis() <= backPressed + 2500) {
-                                moveTaskToBack(true)
-                                finishAndRemoveTask()
-                                android.os.Process.killProcess(android.os.Process.myPid())
+                                finishAffinity()
                             }
                         } else {
                             binding.choiceFrame.visibility = View.VISIBLE
@@ -686,8 +697,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
-            1000,
-            10.0f,
+            100,
+            5.0f,
             locationListener
         )
     }
@@ -699,7 +710,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             latitude = location.latitude
             longitude = location.longitude
             googleMap?.let {
-                Log.d("location listener", "latitude: $latitude  and longitude: $longitude")
+                Log.d("listener", "latitude: $latitude  and longitude: $longitude")
                 if (longitude != 0.0 && latitude != 0.0) {
                     if (cMarker != null) {
                         cMarker?.remove()
@@ -800,8 +811,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun removePlaceMarker() {
-        pMarker?.remove()
-        naverPolyline?.remove()
+        googleMap?.clear()
+        val markerIcon = getMarkerIconFromDrawable(
+            ContextCompat.getDrawable(
+                this@MainActivity,
+                R.drawable.point
+            )
+        )
+        val marker = LatLng(latitude, longitude)
+        val markerOptions = MarkerOptions()
+            .position(marker)
+            .icon(markerIcon)
+            .anchor(0.5f, 1.0f)
+        cMarker = googleMap?.addMarker(markerOptions)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
