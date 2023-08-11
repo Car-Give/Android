@@ -23,6 +23,10 @@ android {
         buildConfigField("String", "google", properties.getProperty("googleUrl"))
         buildConfigField("String", "webKey", properties.getProperty("webKey"))
         buildConfigField("String", "directionUrl", properties.getProperty("directionUrl"))
+        buildConfigField("String", "naverUrl", properties.getProperty("naverUrl"))
+        buildConfigField("String", "naverClient", properties.getProperty("naverClient"))
+        buildConfigField("String", "naverSecret", properties.getProperty("naverSecret"))
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

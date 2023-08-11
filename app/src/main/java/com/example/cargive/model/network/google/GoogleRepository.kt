@@ -1,13 +1,12 @@
-package com.example.cargive.model.network.google.search
+package com.example.cargive.model.network.google
 
 import android.util.Log
 import com.example.cargive.BuildConfig
-import com.example.cargive.model.network.google.GoogleApis
 import com.example.cargive.model.network.google.route.PlaceRouteResponseModel
+import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 class GoogleRepository {

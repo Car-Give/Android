@@ -31,8 +31,9 @@ import com.example.cargive.R
 import com.example.cargive.databinding.ActivityMainBinding
 import com.example.cargive.databinding.MainNavheaderBinding
 import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
-import com.example.cargive.model.network.google.search.GoogleRepository
+import com.example.cargive.model.network.google.GoogleRepository
 import com.example.cargive.model.network.google.search.Results
+import com.example.cargive.model.network.naver.NaverRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -54,14 +55,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.INTERNET
     )
-    private val repository = GoogleRepository()
+    private val googleRepository = GoogleRepository()
+    private val naverRepository = NaverRepository()
     private val REQUEST_PERMISSION_CODE = 1
     private var googleMap: GoogleMap? = null
     private var cMarker: Marker? = null
     private var pMarker: Marker? = null
     private var currentId: String? = null
     private var placeId: String? = null
-    private lateinit var location: Location
+    private var location: Location? = null
+    private var pLocation: Location? = null
 
 
     //    private var cameraPosition: CameraPosition? = null
@@ -77,8 +80,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var nav: MainNavheaderBinding
-    private var placeListFragment: SearchParkingLotFragment? = null
-    private var polyline: Polyline? = null
+//    private var placeListFragment: SearchParkingLotFragment? = null
+//    private var polyline: Polyline? = null
+    private var naverPolyline: Polyline? = null
 
     //    private var placeNavFragment: NavParkingLotFragment? = null
     private var lastSearch = ""
@@ -97,11 +101,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (binding.placeInfoFrame.visibility == View.VISIBLE) {
                         binding.placeInfoFrame.visibility = View.GONE
                     } else {
-                        if (polyline != null) {
-                            polyline?.remove()
+                        if (naverPolyline != null) {
+                            naverPolyline?.remove()
                             pMarker?.remove()
-                            polyline = null
+                            naverPolyline = null
                         } else {
+
+                        }
+                        if(binding.choiceFrame.visibility == View.VISIBLE) {
                             if (System.currentTimeMillis() > backPressed + 2500) {
                                 backPressed = System.currentTimeMillis()
                                 Toast.makeText(
@@ -118,6 +125,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 finishAndRemoveTask()
                                 android.os.Process.killProcess(android.os.Process.myPid())
                             }
+                        } else {
+                            binding.choiceFrame.visibility = View.VISIBLE
+                            binding.toolbar.visibility = View.GONE
                         }
                     }
                 }
@@ -157,6 +167,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
                 if (binding.searchName.text.toString().isNotBlank()) {
+                    binding.placeInfoFrame.visibility = View.GONE
                     searchPlaces(binding.searchName.text.toString())
                     lastSearch = binding.searchName.text.toString()
                     binding.searchName.setText("")
@@ -166,6 +177,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         binding.searchIcon.setOnClickListener {
             if (binding.searchName.text.toString().isNotBlank()) {
+                binding.placeInfoFrame.visibility = View.GONE
                 searchPlaces(binding.searchName.text.toString())
                 lastSearch = binding.searchName.text.toString()
                 binding.searchName.setText("")
@@ -332,7 +344,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         coroutine.launch {
             if (!this@MainActivity.isFinishing && longitude != 0.0 && latitude != 0.0) {
                 val resultDeferred = coroutine.async {
-                    repository.getPlaceInfoByQuery(
+                    googleRepository.getPlaceInfoByQuery(
                         keyword = keyword,
                         latitude = latitude,
                         longitude = longitude
@@ -352,23 +364,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun routePlace() {
         Log.d("place", "placeId: $placeId")
+        Log.d("place", "currentId: $currentId")
         val coroutine = CoroutineScope(Dispatchers.IO)
         coroutine.launch {
             if (!this@MainActivity.isFinishing && !placeId.isNullOrBlank() && !currentId.isNullOrBlank()) {
-                val resultDeferred = coroutine.async {
-                    repository.getPlaceRouteResult(latitude, longitude, placeId!!)
-                }
-                val result = resultDeferred.await()
-                Log.d("search result", result.toString())
-                result?.let {
-                    withContext(Dispatchers.Main) {
-                        val polylineOptions = PolylineOptions()
-                        polylineOptions.addAll(PolyUtil.decode(it.routes[0].overview_polyline.points))
-                        polylineOptions.color(Color.BLUE)
-                        polyline = googleMap?.addPolyline(polylineOptions)
-                    }
-                }
+//                val resultDeferred = coroutine.async {
+//                    googleRepository.getPlaceRouteResult(latitude, longitude, placeId!!)
+//                }
+//                val result = resultDeferred.await()
+//                Log.d("search result", result.toString())
+//                result?.let {
+//                    withContext(Dispatchers.Main) {
+//                        val polylineOptions = PolylineOptions()
+//                        polylineOptions.addAll(PolyUtil.decode(it.routes[0].overview_polyline.points))
+//                        polylineOptions.color(Color.BLUE)
+//                        polyline = googleMap?.addPolyline(polylineOptions)
+//                    }
+//                }
                 binding.placeInfoFrame.visibility = View.VISIBLE
+                Log.d("naver", "cPlace: $location, pPlace: $pLocation")
+                val naverDeferred = coroutine.async {
+                    naverRepository.getNaverRoute(location!!, pLocation!!)
+                }
+                val naver = naverDeferred.await()
+                if(naver != null) {
+                    Log.d("naver", "route: ${naver.route}")
+                    val route = naver.route.trafast
+                    val pathContainer : MutableList<LatLng> = mutableListOf()
+                    for(path_cords in route){
+                        for(path_cords_xy in path_cords.path){
+                            //구한 경로를 하나씩 path_container에 추가해줌
+                            pathContainer.add(LatLng(path_cords_xy[1], path_cords_xy[0]))
+                        }
+                    }
+                    withContext(Dispatchers.Main) {
+                        val naverPolyOptions = PolylineOptions()
+                        naverPolyOptions.addAll(pathContainer)
+                        naverPolyOptions.color(Color.BLUE)
+                        naverPolyline = googleMap?.addPolyline(naverPolyOptions)
+                    }
+
+                }
             }
         }
     }
@@ -384,8 +420,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun sortPlaceList(keyword: String, result: GooglePlaceSearchModel) {
         binding.searchPlaceName.text = keyword
         location = Location("Current Location")
-        location.longitude = longitude
-        location.latitude = latitude
+        location?.longitude = longitude
+        location?.latitude = latitude
         binding.searchResultFrame.visibility = View.VISIBLE
 
         if (result.results.isNotEmpty()) {
@@ -393,7 +429,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val placeLocation = Location("place")
                 placeLocation.latitude = it.geometry.location.lat
                 placeLocation.longitude = it.geometry.location.lng
-                location.distanceTo(placeLocation)
+                location?.distanceTo(placeLocation)
             }
             Log.d("정렬됨", "sorted: $sorted")
             showPlaceList(sorted)
@@ -444,7 +480,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
         binding.searchResult.visibility = View.VISIBLE
-        val adapter = ParkingLotListAdapter(location, placesClient, this)
+        val adapter = ParkingLotListAdapter(location!!, placesClient, this)
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)
@@ -738,6 +774,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .icon(markerIcon)
                 .anchor(0.5f, 1.0f)
             pMarker = it.addMarker(markerOptions)
+            pLocation = Location(name)
+            pLocation?.latitude = pLat
+            pLocation?.longitude = pLng
+            Log.d("location place", "lat: $pLat, lng: $pLng")
         }
     }
 
@@ -761,6 +801,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun removePlaceMarker() {
         pMarker?.remove()
+        naverPolyline?.remove()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
