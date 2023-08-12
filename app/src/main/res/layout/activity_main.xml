@@ -15,6 +15,7 @@
         android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ui_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -42,6 +43,7 @@
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
                     android:src="@drawable/back"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,9 +51,8 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginHorizontal="10dp"
                     android:background="@drawable/round_rect"
-                    android:visibility="invisible"
                     app:layout_constraintStart_toEndOf="@id/menu_btn"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -93,13 +94,13 @@
                 android:id="@+id/search_result_frame"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/round_rect"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="80dp"
-                android:visibility="gone"
                 android:layout_marginBottom="10dp"
+                android:background="@drawable/round_rect"
+                android:orientation="vertical"
                 android:paddingBottom="10dp"
-                android:orientation="vertical">
+                android:visibility="gone">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout"
@@ -136,9 +137,9 @@
                     android:id="@+id/caution_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginVertical="200dp"
                     android:orientation="vertical"
                     android:visibility="gone"
-                    android:layout_marginVertical="200dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -167,9 +168,9 @@
                 android:id="@+id/place_info_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/shadow_place_info"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginBottom="50dp"
+                android:background="@drawable/shadow_place_info"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent">
 
@@ -178,8 +179,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:orientation="horizontal"
                     android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
                     android:weightSum="5"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:layout_editor_absoluteX="1dp">
@@ -257,8 +258,8 @@
                                 android:id="@+id/place_distance"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="#FF1744"
                                 android:layout_marginStart="8dp"
+                                android:textColor="#FF1744"
                                 android:textSize="17sp" />
                         </LinearLayout>
 
@@ -289,11 +290,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="12dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/round_follow"
                     android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/info_frame"
-                    android:layout_marginBottom="10dp">
+                    app:layout_constraintTop_toBottomOf="@+id/info_frame">
 
                     <Button
                         android:id="@+id/navigate_place"
@@ -317,6 +318,7 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingVertical="30dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/map_view">
 
                 <LinearLayout
@@ -354,6 +356,166 @@
                         android:text="  주차장 검색"
                         android:textColor="@color/black" />
                 </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/select_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="20dp"
+                android:weightSum="1"
+                app:layout_constraintBottom_toBottomOf="@+id/map_view">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:layout_weight="0.47"
+                    android:background="@drawable/round_rect"
+                    android:gravity="center">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/park_car"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:drawableStart="@drawable/parking_resize"
+                        android:drawablePadding="8dp"
+                        android:paddingVertical="20dp"
+                        android:text="주차하기"
+                        android:textColor="@color/black"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:layout_weight="0.47"
+                    android:background="@drawable/round_rect"
+                    android:gravity="center">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/find_my_car"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:drawableStart="@drawable/car_fill_resize"
+                        android:drawablePadding="8dp"
+                        android:paddingVertical="20dp"
+                        android:text="내차 찾기"
+                        android:textColor="@color/black"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/my_car_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="15dp"
+                android:visibility="gone"
+                android:weightSum="1"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/my_car_img"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:adjustViewBounds="true" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/my_car_number"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
+                            android:textColor="@color/black"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/my_car_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="13sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
+                            android:text="점검 날짜:"
+                            android:textColor="@color/black"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/my_car_inspect"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
+                            android:text="주행거리:"
+                            android:textColor="@color/black"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/my_car_distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/my_car_attribute"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    </com.google.android.material.chip.ChipGroup>
+
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

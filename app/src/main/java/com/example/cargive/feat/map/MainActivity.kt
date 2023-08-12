@@ -22,6 +22,8 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -118,32 +120,70 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 .anchor(0.5f, 1.0f)
                             cMarker = googleMap?.addMarker(markerOptions)
                             naverPolyline = null
-                        } else {
-
+                            binding.selectFrame.visibility = View.VISIBLE
+                            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                            binding.menuBtn.visibility = View.GONE
                         }
                         if(binding.choiceFrame.visibility == View.VISIBLE) {
-                            if (System.currentTimeMillis() > backPressed + 2500) {
-                                backPressed = System.currentTimeMillis()
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Back 버튼을 한번 더 누르면 종료합니다.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                return
-                            }
-
-                            if (System.currentTimeMillis() <= backPressed + 2500) {
-                                finishAffinity()
-                            }
+                            binding.choiceFrame.visibility = View.GONE
+                            binding.menuBtn.visibility = View.GONE
+                            binding.selectFrame.visibility = View.VISIBLE
+                            binding.toolbar.visibility = View.VISIBLE
+                            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                            return
                         } else {
-                            binding.choiceFrame.visibility = View.VISIBLE
-                            binding.toolbar.visibility = View.GONE
+                            if(binding.selectFrame.visibility == View.VISIBLE) {
+                                if (System.currentTimeMillis() > backPressed + 2500) {
+                                    backPressed = System.currentTimeMillis()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Back 버튼을 한번 더 누르면 종료합니다.",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    return
+                                }
+
+                                if (System.currentTimeMillis() <= backPressed + 2500) {
+                                    finishAffinity()
+                                }
+                            }
                         }
                     }
                 }
             }
+            if(binding.myCarFrame.visibility == View.VISIBLE) {
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.uiFrame)
+                constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+                constraintSet.applyTo(binding.uiFrame)
+                binding.myCarFrame.visibility = View.GONE
+                binding.choiceFrame.visibility = View.GONE
+                binding.menuBtn.visibility = View.GONE
+                binding.selectFrame.visibility = View.VISIBLE
+                binding.toolbar.visibility = View.VISIBLE
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                return
+            } else {
+                if(binding.selectFrame.visibility == View.VISIBLE) {
+                    if (System.currentTimeMillis() > backPressed + 2500) {
+                        backPressed = System.currentTimeMillis()
+                        Toast.makeText(
+                            applicationContext,
+                            "Back 버튼을 한번 더 누르면 종료합니다.",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        return
+                    }
+
+                    if (System.currentTimeMillis() <= backPressed + 2500) {
+                        finishAffinity()
+                    }
+                }
+            }
         }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,12 +194,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setSupportActionBar(binding.toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.list_stripe)
         binding.navigationView.setNavigationItemSelectedListener(this)
         binding.menuBtn.setOnClickListener {
-            binding.navigationView.bringToFront()
-            binding.drawerLayout.invalidate()
-            binding.drawerLayout.openDrawer(GravityCompat.START)
+//            binding.navigationView.bringToFront()
+//            binding.drawerLayout.invalidate()
+//            binding.drawerLayout.openDrawer(GravityCompat.START)
+            if(binding.placeInfoFrame.visibility == View.VISIBLE) {
+                binding.placeInfoFrame.visibility = View.GONE
+                binding.choiceFrame.visibility = View.GONE
+                binding.myCarFrame.visibility = View.GONE
+                binding.searchResultFrame.visibility = View.VISIBLE
+            } else {
+                googleMap?.clear()
+                val markerIcon = getMarkerIconFromDrawable(
+                    ContextCompat.getDrawable(
+                        this@MainActivity,
+                        R.drawable.point
+                    )
+                )
+                val marker = LatLng(latitude, longitude)
+                val markerOptions = MarkerOptions()
+                    .position(marker)
+                    .icon(markerIcon)
+                    .anchor(0.5f, 1.0f)
+                cMarker = googleMap?.addMarker(markerOptions)
+                naverPolyline = null
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                binding.toolbar.visibility = View.VISIBLE
+                binding.menuBtn.visibility = View.GONE
+                binding.placeInfoFrame.visibility = View.GONE
+                binding.choiceFrame.visibility = View.GONE
+                binding.searchResultFrame.visibility = View.GONE
+                binding.myCarFrame.visibility = View.GONE
+                binding.selectFrame.visibility = View.VISIBLE
+            }
         }
         setNavListener()
 
@@ -175,6 +245,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
         }
 
+        binding.searchName.setOnClickListener {
+            binding.searchName.isCursorVisible = true
+        }
         binding.searchName.setOnEditorActionListener { textView, i, keyEvent ->
             if (i == EditorInfo.IME_ACTION_SEARCH) {
                 if (binding.searchName.text.toString().isNotBlank()) {
@@ -195,12 +268,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
+        binding.findMyCar.setOnClickListener {
+            binding.myCarFrame.visibility = View.VISIBLE
+            binding.selectFrame.visibility = View.GONE
+            binding.menuBtn.visibility = View.VISIBLE
+            binding.toolbar.visibility = View.GONE
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(binding.uiFrame)
+            constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, binding.myCarFrame.id, ConstraintSet.BOTTOM)
+            constraintSet.applyTo(binding.uiFrame)
+        }
+        binding.parkCar.setOnClickListener {
+            binding.selectFrame.visibility = View.GONE
+            binding.menuBtn.visibility = View.VISIBLE
+            binding.toolbar.visibility = View.GONE
+            binding.choiceFrame.visibility = View.VISIBLE
+        }
+
         binding.findCar.setOnClickListener {
 
         }
         binding.findParkingLot.setOnClickListener {
-            binding.choiceFrame.visibility = View.GONE
-            binding.toolbar.visibility = View.VISIBLE
+
         }
 
 //        key hash 확인용 코드
@@ -222,132 +311,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            }
 //        }
     }
-
-
-    //    private fun getCurrentLocation() {
-//        if(::locationManager.isInitialized) {
-//            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        }
-//
-//        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-//        if(isGpsEnabled) {
-//            when {
-//            }
-//        }
-//    }
-
-//    @SuppressLint("MissingPermission")
-//    private fun showCurrentPlace() {
-//        val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-//
-//        // Use the builder to create a FindCurrentPlaceRequest.
-//        val request = FindCurrentPlaceRequest.newInstance(placeFields)
-//
-//        // Get the likely places - that is, the businesses and other points of interest that
-//        // are the best match for the device's current location.
-//        val placeResult = placesClient.findCurrentPlace(request)
-//        placeResult.addOnCompleteListener { task ->
-//            if (task.isSuccessful && task.result != null) {
-//                val likelyPlaces = task.result
-//
-//                // Set the count, handling cases where less than 5 entries are returned.
-//                val count = if (likelyPlaces != null && likelyPlaces.placeLikelihoods.size < M_MAX_ENTRIES) {
-//                    likelyPlaces.placeLikelihoods.size
-//                } else {
-//                    M_MAX_ENTRIES
-//                }
-//                var i = 0
-//                likelyPlaceNames = arrayOfNulls(count)
-//                likelyPlaceAddresses = arrayOfNulls(count)
-//                likelyPlaceAttributions = arrayOfNulls<List<*>?>(count)
-//                likelyPlaceLatLngs = arrayOfNulls(count)
-//                for (placeLikelihood in likelyPlaces?.placeLikelihoods ?: emptyList()) {
-//                    // Build a list of likely places to show the user.
-//                    likelyPlaceNames[i] = placeLikelihood.place.name
-//                    likelyPlaceAddresses[i] = placeLikelihood.place.address
-//                    likelyPlaceAttributions[i] = placeLikelihood.place.attributions
-//                    likelyPlaceLatLngs[i] = placeLikelihood.place.latLng
-//                    i++
-//                    if (i > count - 1) {
-//                        break
-//                    }
-//                }
-//
-//                // Show a dialog offering the user the list of likely places, and add a
-//                // marker at the selected place.
-//                openPlacesDialog()
-//            } else {
-//                Log.e(TAG, "Exception: %s", task.exception)
-//            }
-//        }
-//    }
-//
-//    private fun openPlacesDialog() {
-//        // Ask the user to choose the place where they are now.
-//        val listener = DialogInterface.OnClickListener { dialog, which -> // The "which" argument contains the position of the selected item.
-//            val markerLatLng = likelyPlaceLatLngs[which]
-//            var markerSnippet = likelyPlaceAddresses[which]
-//            if (likelyPlaceAttributions[which] != null) {
-//                markerSnippet = """
-//                    $markerSnippet
-//                    ${likelyPlaceAttributions[which]}
-//                    """.trimIndent()
-//            }
-//
-//            if (markerLatLng == null) {
-//                return@OnClickListener
-//            }
-//
-//            // Add a marker for the selected place, with an info window
-//            // showing information about that place.
-//            googleMap?.addMarker(MarkerOptions()
-//                .title(likelyPlaceNames[which])
-//                .position(markerLatLng)
-//                .snippet(markerSnippet))
-//
-//            // Position the map's camera at the location of the marker.
-//            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
-//                DEFAULT_ZOOM.toFloat()))
-//        }
-//
-//        // Display the dialog.
-//        AlertDialog.Builder(this)
-//            .setTitle("choose a place")
-//            .setItems(likelyPlaceNames, listener)
-//            .show()
-//    }
-//
-//    @SuppressLint("MissingPermission")
-//    private fun getDeviceLocation() {
-//        val locationResult = fusedLocationClient.lastLocation
-//        locationResult.addOnCompleteListener(this) { task ->
-//            if (task.isSuccessful) {
-//                // Set the map's camera position to the current location of the device.
-//                lastKnownLocation = task.result
-//                if (lastKnownLocation != null) {
-//                    googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                        LatLng(lastKnownLocation!!.latitude,
-//                            lastKnownLocation!!.longitude), DEFAULT_ZOOM.toFloat()))
-//                }
-//            } else {
-//                Log.d(TAG, "Current location is null. Using defaults.")
-//                Log.e(TAG, "Exception: %s", task.exception)
-//                googleMap?.moveCamera(CameraUpdateFactory
-//                    .newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
-//                googleMap?.uiSettings?.isMyLocationButtonEnabled = false
-//            }
-//        }
-//    }
-//
-//    @SuppressLint("MissingPermission")
-//    private fun updateLocation() {
-//        try {
-//            googleMap?.isMyLocationEnabled = true
-////            googleMap?.uiSettings?.isMyLocationButtonEnabled = true
-//        } catch (e: SecurityException) {
-//            Log.e("Exception: %s", e.message, e)
-//        }
-//    }
 
 
     private fun searchPlaces(keyword: String) {
@@ -489,12 +452,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
 
             }
-
+        binding.selectFrame.visibility = View.GONE
         binding.searchResult.visibility = View.VISIBLE
+        binding.menuBtn.visibility = View.VISIBLE
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val adapter = ParkingLotListAdapter(location!!, placesClient, this)
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)
+        binding.drawerLayout.closeDrawers()
     }
 
     fun showPlaceNav(
@@ -530,18 +496,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setNavListener() {
         nav.profileLink.setOnClickListener {
-            Toast.makeText(this@MainActivity.applicationContext, "프로필 눌림!", Toast.LENGTH_SHORT)
-                .show()
-            Log.d("btn", "프로필 링크 눌림!")
+//            Toast.makeText(this@MainActivity.applicationContext, "프로필 눌림!", Toast.LENGTH_SHORT)
+//                .show()
+//            Log.d("btn", "프로필 링크 눌림!")
+            //프로필 화면으로 전환
         }
         nav.aroundBtn.setOnClickListener {
-
+            //주변 주차장 검색
+            searchPlaces("주차장")
         }
         nav.mycarBtn.setOnClickListener {
-
+            //내 차 화면으로 전환
         }
         nav.favoriteBtn.setOnClickListener {
-
+            //즐겨찾기 화면으로 전환
         }
         nav.useInfo.setOnClickListener {
 
@@ -835,6 +803,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun closeKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.searchName.windowToken, 0)
+        binding.searchName.isCursorVisible = false
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                binding.navigationView.bringToFront()
+                binding.drawerLayout.invalidate()
+                binding.drawerLayout.openDrawer(GravityCompat.START)
+            }
+
+//            R.id.refresh_button -> {
+//                if(refresh) {
+//                    refresh = false
+//                    callTokenHistory()
+//                }
+//            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {
