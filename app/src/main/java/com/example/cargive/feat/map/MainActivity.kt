@@ -97,42 +97,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 binding.drawerLayout.closeDrawers()
             } else {
-                if(binding.searchResultFrame.visibility == View.VISIBLE) {
-                    binding.searchResultFrame.visibility = View.GONE
+                if(binding.placeInfoFrame.visibility == View.VISIBLE) {
+                    binding.placeInfoFrame.visibility = View.GONE
+                    binding.searchResultFrame.visibility = View.VISIBLE
                 } else {
-                    if (binding.placeInfoFrame.visibility == View.VISIBLE) {
-                        binding.placeInfoFrame.visibility = View.GONE
+                    if (binding.searchResultFrame.visibility == View.VISIBLE) {
+                        binding.searchResultFrame.visibility = View.GONE
+                        binding.selectFrame.visibility = View.VISIBLE
+                        binding.currentLocaiton.visibility = View.VISIBLE
+                        return
                     } else {
-                        if (naverPolyline != null) {
-//                            naverPolyline?.remove()
-//                            pMarker?.remove()
-                            googleMap?.clear()
-                            val markerIcon = getMarkerIconFromDrawable(
-                                ContextCompat.getDrawable(
-                                    this@MainActivity,
-                                    R.drawable.point
-                                )
-                            )
-                            val marker = LatLng(latitude, longitude)
-                            val markerOptions = MarkerOptions()
-                                .position(marker)
-                                .icon(markerIcon)
-                                .anchor(0.5f, 1.0f)
-                            cMarker = googleMap?.addMarker(markerOptions)
-                            naverPolyline = null
-                            binding.selectFrame.visibility = View.VISIBLE
-                            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                            binding.menuBtn.visibility = View.GONE
-                        }
                         if(binding.choiceFrame.visibility == View.VISIBLE) {
                             binding.choiceFrame.visibility = View.GONE
                             binding.menuBtn.visibility = View.GONE
                             binding.selectFrame.visibility = View.VISIBLE
                             binding.toolbar.visibility = View.VISIBLE
+                            binding.currentLocaiton.visibility = View.VISIBLE
                             supportActionBar?.setDisplayHomeAsUpEnabled(true)
                             return
                         } else {
                             if(binding.selectFrame.visibility == View.VISIBLE) {
+                                if (naverPolyline != null) {
+//                            naverPolyline?.remove()
+//                            pMarker?.remove()
+                                    googleMap?.clear()
+                                    val markerIcon = getMarkerIconFromDrawable(
+                                        ContextCompat.getDrawable(
+                                            this@MainActivity,
+                                            R.drawable.point
+                                        )
+                                    )
+                                    val marker = LatLng(latitude, longitude)
+                                    val markerOptions = MarkerOptions()
+                                        .position(marker)
+                                        .icon(markerIcon)
+                                        .anchor(0.5f, 1.0f)
+                                    cMarker = googleMap?.addMarker(markerOptions)
+                                    naverPolyline = null
+                                    binding.selectFrame.visibility = View.VISIBLE
+                                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                                    binding.menuBtn.visibility = View.GONE
+                                }
                                 if (System.currentTimeMillis() > backPressed + 2500) {
                                     backPressed = System.currentTimeMillis()
                                     Toast.makeText(
@@ -162,6 +167,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.menuBtn.visibility = View.GONE
                 binding.selectFrame.visibility = View.VISIBLE
                 binding.toolbar.visibility = View.VISIBLE
+                binding.currentLocaiton.visibility = View.VISIBLE
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 return
             } else {
@@ -207,20 +213,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.myCarFrame.visibility = View.GONE
                 binding.searchResultFrame.visibility = View.VISIBLE
             } else {
-                googleMap?.clear()
-                val markerIcon = getMarkerIconFromDrawable(
-                    ContextCompat.getDrawable(
-                        this@MainActivity,
-                        R.drawable.point
-                    )
-                )
-                val marker = LatLng(latitude, longitude)
-                val markerOptions = MarkerOptions()
-                    .position(marker)
-                    .icon(markerIcon)
-                    .anchor(0.5f, 1.0f)
-                cMarker = googleMap?.addMarker(markerOptions)
-                naverPolyline = null
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 binding.toolbar.visibility = View.VISIBLE
                 binding.menuBtn.visibility = View.GONE
@@ -229,6 +221,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.searchResultFrame.visibility = View.GONE
                 binding.myCarFrame.visibility = View.GONE
                 binding.selectFrame.visibility = View.VISIBLE
+                binding.currentLocaiton.visibility = View.VISIBLE
             }
         }
         setNavListener()
@@ -279,10 +272,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             constraintSet.applyTo(binding.uiFrame)
         }
         binding.parkCar.setOnClickListener {
+            binding.currentLocaiton.visibility = View.GONE
             binding.selectFrame.visibility = View.GONE
             binding.menuBtn.visibility = View.VISIBLE
             binding.toolbar.visibility = View.GONE
             binding.choiceFrame.visibility = View.VISIBLE
+        }
+
+        binding.currentLocaiton.setOnClickListener {
+            googleMap?.let {
+                val marker = LatLng(latitude, longitude)
+                it.moveCamera(CameraUpdateFactory.newLatLng(marker))
+                it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+            }
         }
 
         binding.findCar.setOnClickListener {
@@ -504,6 +506,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav.aroundBtn.setOnClickListener {
             //주변 주차장 검색
             searchPlaces("주차장")
+            binding.currentLocaiton.visibility = View.GONE
         }
         nav.mycarBtn.setOnClickListener {
             //내 차 화면으로 전환
