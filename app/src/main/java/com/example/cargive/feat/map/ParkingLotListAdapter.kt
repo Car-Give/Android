@@ -52,7 +52,6 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             val distance = cLocation.distanceTo(pLocation).roundToInt()
             binding.placeDistance.text = distance.toString()+"m"
             val main = activity as MainActivity
-            main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name)
             binding.placeInfoFrame.setOnClickListener {
                 main.showPlaceNav(datas, distance, bitmap, phoneNumber, address, datas.place_id)
 //
@@ -94,6 +93,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                     // Get the photo metadata.
                     val metada = place.photoMetadatas
                     if (metada == null || metada.isEmpty()) {
+                        main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name, binding.internalCall.text.toString(), address, distance, bitmap)
                         Log.d("장소 결과", "No photo metadata.")
                         return@addOnSuccessListener
                     }
@@ -110,6 +110,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                         .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
                             bitmap = fetchPhotoResponse.bitmap
                             binding.placeImg.setImageBitmap(bitmap)
+                            main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name, binding.internalCall.text.toString(), address, distance, bitmap)
                         }.addOnFailureListener { exception: Exception ->
                             if (exception is ApiException) {
                                 Log.e("place", "Place not found: " + exception.message)
@@ -117,11 +118,11 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
                                 TODO("Handle error with given status code.")
                             }
                         }
+
                 }
                 .addOnFailureListener {
                     Log.e("place", "Place not found: " + it.message)
                 }
-
 
 
         }

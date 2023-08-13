@@ -5,12 +5,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -40,6 +42,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
@@ -51,7 +54,7 @@ import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    OnMapReadyCallback {
+    OnMapReadyCallback, OnMarkerClickListener {
     private val PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -363,12 +366,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun routePlace(result: Results) {
-        Log.d("place", "placeId: $placeId")
-        Log.d("place", "currentId: $currentId")
+    private fun routePlace(name: String, lat: Double, lng: Double) {
+        naverPolyline?.remove()
         val coroutine = CoroutineScope(Dispatchers.IO)
         coroutine.launch {
-            if (!this@MainActivity.isFinishing && !placeId.isNullOrBlank() && !currentId.isNullOrBlank()) {
+            if (!this@MainActivity.isFinishing) {
 //                val resultDeferred = coroutine.async {
 //                    googleRepository.getPlaceRouteResult(latitude, longitude, placeId!!)
 //                }
@@ -382,9 +384,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                        polyline = googleMap?.addPolyline(polylineOptions)
 //                    }
 //                }
-                val placeLocation = Location(result.name)
-                placeLocation.latitude = result.geometry.location.lat
-                placeLocation.longitude = result.geometry.location.lng
+                val placeLocation = Location(name)
+                placeLocation.latitude = lat
+                placeLocation.longitude = lng
 
                 binding.placeInfoFrame.visibility = View.VISIBLE
                 Log.d("naver", "cPlace: $location, pPlace: $pLocation")
@@ -516,8 +518,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         binding.placeDistance.text = distance.toString() + "m"
         binding.placeInfoFrame.visibility = View.VISIBLE
+        pLocation = Location(result.name)
+        pLocation?.latitude = result.geometry.location.lat
+        pLocation?.longitude = result.geometry.location.lng
         binding.navigatePlace.setOnClickListener {
-            routePlace(result)
+            Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+            routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
         }
 
 //        placeNavFragment = NavParkingLotFragment(result, placesClient, cLocation)
@@ -634,6 +640,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Log.d("map", "map ready!")
         if (checkPermissions()) {
 //            setLocationUpdates()
+            googleMap?.setOnMarkerClickListener(this)
             requestLocation()
 //            showCurrentPlace()
 //            updateLocation()
@@ -770,7 +777,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-    fun addPlaceMarker(pLat: Double, pLng: Double, name: String) {
+    fun addPlaceMarker(pLat: Double, pLng: Double, name: String, call: String, address: String, distance: Int, bitmap: Bitmap?) {
         googleMap?.let {
             val markerIcon = getMarkerIconFromDrawable(
                 ContextCompat.getDrawable(
@@ -783,6 +790,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .position(marker)
                 .title(name)
                 .icon(markerIcon)
+                .snippet("call:$call,address:$address,distance:$distance,bitmap:$bitmap,lat:$pLat,lng:$pLng")
                 .anchor(0.5f, 1.0f)
             val placeMarker = it.addMarker(markerOptions)
 
@@ -868,6 +876,75 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Used for selecting the current place.
         private const val M_MAX_ENTRIES = 5
+    }
+
+    override fun onMarkerClick(p0: Marker): Boolean {
+        binding.searchResultFrame.visibility = View.GONE
+        binding.placeName.text = p0.title
+        val split = p0.snippet?.split(",")
+        Log.d("split", split.toString())
+        var lat = ""
+        var lng = ""
+        split?.forEach {
+            val values = it.split(":")
+            Log.d("split", "valeus: ${values.toString()}")
+            when(values[0]) {
+                "call" -> {
+                    if(!values[1].isNullOrBlank()) {
+                        binding.internalCall.text = values[1]
+                    }
+                }
+                "address" -> {
+                    if(!values[1].isNullOrBlank()) {
+                        binding.detailAddress.text = values[1]
+                    }
+                }
+                "distance" -> {
+                    if(!values[1].isNullOrBlank()) {
+                        binding.placeDistance.text = values[1]+"m"
+                    }
+                }
+                "bitmap" -> {
+                    if(!values[1].isNullOrBlank()) {
+                        binding.placeImg.setImageBitmap(convertStringToBitmap(values[1]))
+                    }
+                }
+                "lat" -> {
+                    if(!values[1].isNullOrBlank()) {
+                        lat = values[1]
+                    }
+                }
+                "lng" -> {
+                    if(!values[1].isNullOrBlank()) {
+                        lng = values[1]
+                    }
+                }
+            }
+        }
+        pLocation = Location(p0.title)
+        pLocation?.latitude = lat.toDouble()
+        pLocation?.longitude = lng.toDouble()
+        binding.placeInfoFrame.visibility = View.VISIBLE
+        Log.d("lat,lng", "latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+        Log.d("marker", p0.title.toString())
+        binding.navigatePlace.setOnClickListener {
+            Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+            routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+        }
+//        showPlaceNav()
+
+
+        return true
+    }
+
+    fun convertStringToBitmap(encodedBitmap: String): Bitmap? {
+        try {
+            val decodedBytes = Base64.decode(encodedBitmap, Base64.DEFAULT)
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 
 }
