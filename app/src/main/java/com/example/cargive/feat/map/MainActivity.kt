@@ -117,27 +117,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             return
                         } else {
                             if(binding.selectFrame.visibility == View.VISIBLE) {
-                                if (naverPolyline != null) {
-//                            naverPolyline?.remove()
-//                            pMarker?.remove()
-                                    googleMap?.clear()
-                                    val markerIcon = getMarkerIconFromDrawable(
-                                        ContextCompat.getDrawable(
-                                            this@MainActivity,
-                                            R.drawable.point
-                                        )
+                                googleMap?.clear()
+                                val markerIcon = getMarkerIconFromDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.point
                                     )
-                                    val marker = LatLng(latitude, longitude)
-                                    val markerOptions = MarkerOptions()
-                                        .position(marker)
-                                        .icon(markerIcon)
-                                        .anchor(0.5f, 1.0f)
-                                    cMarker = googleMap?.addMarker(markerOptions)
-                                    naverPolyline = null
-                                    binding.selectFrame.visibility = View.VISIBLE
-                                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                                    binding.menuBtn.visibility = View.GONE
-                                }
+                                )
+                                val marker = LatLng(latitude, longitude)
+                                val markerOptions = MarkerOptions()
+                                    .position(marker)
+                                    .icon(markerIcon)
+                                    .anchor(0.5f, 1.0f)
+                                cMarker = googleMap?.addMarker(markerOptions)
+                                naverPolyline = null
+                                binding.selectFrame.visibility = View.VISIBLE
+                                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                                binding.menuBtn.visibility = View.GONE
                                 if (System.currentTimeMillis() > backPressed + 2500) {
                                     backPressed = System.currentTimeMillis()
                                     Toast.makeText(
@@ -287,6 +283,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
+        binding.searchResultFrame.setOnClickListener {
+            when(binding.constraintLayout.visibility) {
+                View.VISIBLE -> {
+                    val constraintSet = ConstraintSet()
+                    constraintSet.clone(binding.uiFrame)
+                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, binding.uiFrame.id, ConstraintSet.BOTTOM)
+                    constraintSet.applyTo(binding.uiFrame)
+                    val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+//                    params.bottomMargin = 20
+                    binding.searchResultFrame.layoutParams = params
+                    binding.constraintLayout.visibility = View.GONE
+                    binding.searchResult.visibility = View.GONE
+                }
+                View.GONE -> {
+                    val constraintSet = ConstraintSet()
+                    constraintSet.clone(binding.uiFrame)
+                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.TOP, binding.uiFrame.id, ConstraintSet.TOP)
+                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, binding.uiFrame.id, ConstraintSet.BOTTOM)
+                    constraintSet.applyTo(binding.uiFrame)
+                    val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
+//                    params.bottomMargin = 20
+//                    params.topMargin = 120
+                    binding.searchResultFrame.layoutParams = params
+                    binding.constraintLayout.visibility = View.VISIBLE
+                    binding.searchResult.visibility = View.VISIBLE
+                }
+            }
+        }
+
         binding.findCar.setOnClickListener {
 
         }
@@ -338,7 +363,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun routePlace() {
+    private fun routePlace(result: Results) {
         Log.d("place", "placeId: $placeId")
         Log.d("place", "currentId: $currentId")
         val coroutine = CoroutineScope(Dispatchers.IO)
@@ -357,10 +382,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                        polyline = googleMap?.addPolyline(polylineOptions)
 //                    }
 //                }
+                val placeLocation = Location(result.name)
+                placeLocation.latitude = result.geometry.location.lat
+                placeLocation.longitude = result.geometry.location.lng
+
                 binding.placeInfoFrame.visibility = View.VISIBLE
                 Log.d("naver", "cPlace: $location, pPlace: $pLocation")
                 val naverDeferred = coroutine.async {
-                    naverRepository.getNaverRoute(location!!, pLocation!!)
+                    naverRepository.getNaverRoute(location!!, placeLocation)
                 }
                 val naver = naverDeferred.await()
                 if(naver != null) {
@@ -462,6 +491,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)
+        adapter
         binding.drawerLayout.closeDrawers()
     }
 
@@ -474,9 +504,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         placeId: String
     ) {
         binding.searchResultFrame.visibility = View.GONE
-        removePlaceMarker()
-        addPlaceMarker(result.geometry.location.lat, result.geometry.location.lng, result.name)
         binding.placeName.text = result.name
+        naverPolyline?.remove()
 
         bitmap?.let {
             binding.placeImg.setImageBitmap(it)
@@ -488,7 +517,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.placeDistance.text = distance.toString() + "m"
         binding.placeInfoFrame.visibility = View.VISIBLE
         binding.navigatePlace.setOnClickListener {
-            routePlace()
+            routePlace(result)
         }
 
 //        placeNavFragment = NavParkingLotFragment(result, placesClient, cLocation)
@@ -755,7 +784,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .title(name)
                 .icon(markerIcon)
                 .anchor(0.5f, 1.0f)
-            pMarker = it.addMarker(markerOptions)
+            val placeMarker = it.addMarker(markerOptions)
+
             pLocation = Location(name)
             pLocation?.latitude = pLat
             pLocation?.longitude = pLng

@@ -51,9 +51,11 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             Log.d("place_id", datas.place_id)
             val distance = cLocation.distanceTo(pLocation).roundToInt()
             binding.placeDistance.text = distance.toString()+"m"
+            val main = activity as MainActivity
+            main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name)
             binding.placeInfoFrame.setOnClickListener {
-                val main = activity as MainActivity
                 main.showPlaceNav(datas, distance, bitmap, phoneNumber, address, datas.place_id)
+//
             }
 
 
