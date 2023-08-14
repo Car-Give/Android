@@ -23,7 +23,8 @@ class ProfilecarActivity : AppCompatActivity() {
         }
         carList= arrayListOf(
             MycarModel("car","12바 1234","점검날짜: ","주행거리: "),
-            MycarModel("car","12나 1234","점검날짜: ","주행거리: ")
+            MycarModel("car","12나 1234","점검날짜: ","주행거리: "),
+            MycarModel("car","12가 1234","점검날짜: ","주행거리: ")
         )
         binding.listMycar.layoutManager=
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)

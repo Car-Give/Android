@@ -64,14 +64,16 @@
     <EditText
         android:id="@+id/car_name"
         android:layout_width="176dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@id/write_car"
         app:layout_constraintTop_toTopOf="@id/write_car"
         android:layout_marginLeft="104dp"/>
     <EditText
         android:id="@+id/head_num"
         android:layout_width="52dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/car_name"
         app:layout_constraintTop_toBottomOf="@id/car_name"
         android:layout_marginTop="16dp"
@@ -80,7 +82,8 @@
     <EditText
         android:id="@+id/middle"
         android:layout_width="33dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@id/head_num"
         app:layout_constraintTop_toTopOf="@id/head_num"
         android:layout_marginLeft="3dp"
@@ -88,7 +91,8 @@
     <EditText
         android:id="@+id/end_num"
         android:layout_width="84dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@id/middle"
         app:layout_constraintTop_toTopOf="@id/middle"
         android:layout_marginLeft="3dp"
@@ -104,7 +108,8 @@
     <EditText
         android:id="@+id/year"
         android:layout_width="66dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/car_name"
         app:layout_constraintTop_toBottomOf="@id/middle"
         android:layout_marginTop="12dp"
@@ -123,7 +128,8 @@
     <EditText
         android:id="@+id/month"
         android:layout_width="28dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@id/year_txt"
         app:layout_constraintTop_toTopOf="@id/year"
         android:layout_marginLeft="4dp"
@@ -141,7 +147,8 @@
     <EditText
         android:id="@+id/day"
         android:layout_width="28dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@id/month_txt"
         app:layout_constraintTop_toTopOf="@id/year"
         android:layout_marginLeft="4dp"
@@ -167,7 +174,8 @@
     <EditText
         android:id="@+id/ride_distance"
         android:layout_width="154dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@id/year"
         app:layout_constraintStart_toStartOf="@id/year"
         android:layout_marginTop="12dp"/>
@@ -197,7 +205,8 @@
         app:layout_constraintTop_toBottomOf="@id/ride_distance"
         app:layout_constraintStart_toStartOf="@id/write_car"
         android:layout_marginTop="30dp"/>
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/call_img"
         android:layout_width="300dp"
         android:layout_height="160dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -206,13 +215,9 @@
         android:layout_margin="32dp"
         android:background="@drawable/round_rectangle"
         android:backgroundTint="@color/light_gray"
-        >
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/img_plus"/>
-    </RelativeLayout>
+        android:scaleType="fitCenter"
+       />
+
     <RelativeLayout
         android:id="@+id/add_mycar"
         android:layout_width="336dp"
