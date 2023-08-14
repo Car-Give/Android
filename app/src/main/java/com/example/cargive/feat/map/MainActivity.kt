@@ -892,11 +892,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 "call" -> {
                     if(!values[1].isNullOrBlank()) {
                         binding.internalCall.text = values[1]
+                    } else {
+                        binding.internalCall.text = ""
                     }
                 }
                 "address" -> {
                     if(!values[1].isNullOrBlank()) {
                         binding.detailAddress.text = values[1]
+                    } else {
+                        binding.detailAddress.text = ""
                     }
                 }
                 "distance" -> {
@@ -921,19 +925,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         }
-        pLocation = Location(p0.title)
-        pLocation?.latitude = lat.toDouble()
-        pLocation?.longitude = lng.toDouble()
         binding.placeInfoFrame.visibility = View.VISIBLE
-        Log.d("lat,lng", "latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
-        Log.d("marker", p0.title.toString())
-        binding.navigatePlace.setOnClickListener {
-            Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
-            routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+        Log.d("lat,lng", "latitude: $lat, longitude: $lng")
+        if(lng.isNotBlank() && lat.isNotBlank()) {
+            pLocation = Location(p0.title)
+            pLocation?.latitude = lat.toDouble()
+            pLocation?.longitude = lng.toDouble()
+            binding.placeInfoFrame.visibility = View.VISIBLE
+            Log.d("marker", p0.title.toString())
+            binding.navigatePlace.setOnClickListener {
+                Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+                routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+            }
+        } else {
+            binding.navigatePlace.setOnClickListener {
+
+            }
         }
-//        showPlaceNav()
-
-
         return true
     }
 
