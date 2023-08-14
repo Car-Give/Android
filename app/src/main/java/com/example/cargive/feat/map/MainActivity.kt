@@ -289,26 +289,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchResultFrame.setOnClickListener {
             when(binding.constraintLayout.visibility) {
                 View.VISIBLE -> {
+                    Log.d("resize", "search result small")
+                    val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                    params.bottomMargin = 30
+                    params.marginEnd = 60
+                    params.marginStart = 60
+                    binding.searchResultFrame.layoutParams = params
+
                     val constraintSet = ConstraintSet()
                     constraintSet.clone(binding.uiFrame)
-                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, binding.uiFrame.id, ConstraintSet.BOTTOM)
+                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
                     constraintSet.applyTo(binding.uiFrame)
-                    val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-//                    params.bottomMargin = 20
-                    binding.searchResultFrame.layoutParams = params
                     binding.constraintLayout.visibility = View.GONE
                     binding.searchResult.visibility = View.GONE
                 }
                 View.GONE -> {
+                    Log.d("resize", "search result big")
+                    val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
+                    params.bottomMargin = 30
+                    params.topMargin = 240
+                    params.marginEnd = 60
+                    params.marginStart = 60
+                    binding.searchResultFrame.layoutParams = params
+
                     val constraintSet = ConstraintSet()
                     constraintSet.clone(binding.uiFrame)
-                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.TOP, binding.uiFrame.id, ConstraintSet.TOP)
-                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, binding.uiFrame.id, ConstraintSet.BOTTOM)
+                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+                    constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
                     constraintSet.applyTo(binding.uiFrame)
-                    val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
-//                    params.bottomMargin = 20
-//                    params.topMargin = 120
-                    binding.searchResultFrame.layoutParams = params
                     binding.constraintLayout.visibility = View.VISIBLE
                     binding.searchResult.visibility = View.VISIBLE
                 }
@@ -522,6 +530,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         pLocation?.latitude = result.geometry.location.lat
         pLocation?.longitude = result.geometry.location.lng
         binding.navigatePlace.setOnClickListener {
+            Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+            routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+        }
+
+        binding.navFrame.setOnClickListener {
             Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
             routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
         }
@@ -937,8 +950,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
                 routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
             }
+            binding.navFrame.setOnClickListener {
+                Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+                routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+            }
         } else {
             binding.navigatePlace.setOnClickListener {
+
+            }
+            binding.navFrame.setOnClickListener {
 
             }
         }
