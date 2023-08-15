@@ -26,24 +26,48 @@
                 android:layout_height="match_parent" />
 
             <LinearLayout
+                android:id="@+id/notice_frame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/round_rect"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
+
+                <TextView
+                    android:id="@+id/notice_msg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="2dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="공지사항!"
+                    app:drawableStartCompat="@drawable/announcement" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/notice_frame">
 
 
                 <ImageView
                     android:id="@+id/menu_btn"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginHorizontal="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="6dp"
                     android:adjustViewBounds="true"
+                    android:visibility="gone"
                     android:background="@android:color/transparent"
                     android:src="@drawable/back"
-                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,7 +75,7 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="8dp"
                     android:background="@drawable/round_rect"
                     app:layout_constraintStart_toEndOf="@id/menu_btn"
                     app:layout_constraintTop_toTopOf="parent">
@@ -95,7 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="115dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/round_rect"
                 android:orientation="vertical"
@@ -559,7 +583,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginVertical="2dp"
-                    android:background="@drawable/round_rect"
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:text="현재 위치 반경 2km내에 주차장이 없습니다."

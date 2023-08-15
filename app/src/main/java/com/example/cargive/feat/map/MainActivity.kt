@@ -19,10 +19,12 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +33,8 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cargive.BuildConfig
 import com.example.cargive.R
@@ -112,7 +116,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         return
                     } else {
                         binding.placeInfoFrame.visibility = View.GONE
-                        binding.searchResultFrame.visibility == View.VISIBLE
+                        binding.searchResultFrame.visibility = View.VISIBLE
                         return
                     }
                 } else {
@@ -120,21 +124,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         binding.searchResultFrame.visibility = View.GONE
                         binding.menuBtn.visibility = View.GONE
                         binding.selectFrame.visibility = View.VISIBLE
+                        binding.noticeFrame.visibility = View.VISIBLE
+                        supportActionBar?.setDisplayHomeAsUpEnabled(true)
                         binding.toolbar.visibility = View.VISIBLE
                         binding.currentLocaiton.visibility = View.VISIBLE
+                        binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            topMargin = binding.linearLayout.marginTop - 40
+                        }
                         return
                     } else {
                         if(binding.choiceFrame.visibility == View.VISIBLE) {
                             binding.choiceFrame.visibility = View.GONE
                             binding.menuBtn.visibility = View.GONE
                             binding.selectFrame.visibility = View.VISIBLE
+                            binding.noticeFrame.visibility = View.VISIBLE
                             binding.toolbar.visibility = View.VISIBLE
                             binding.currentLocaiton.visibility = View.VISIBLE
                             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                            binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                topMargin = binding.linearLayout.marginTop - 40
+                            }
                             return
                         } else {
                             binding.menuBtn.visibility = View.GONE
                             binding.selectFrame.visibility = View.VISIBLE
+                            binding.noticeFrame.visibility = View.VISIBLE
                             binding.toolbar.visibility = View.VISIBLE
                             binding.currentLocaiton.visibility = View.VISIBLE
                             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -152,6 +166,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 .anchor(0.5f, 1.0f)
                             cMarker = googleMap?.addMarker(markerOptions)
                             pMarker = null
+
+                            if(binding.myCarFrame.visibility == View.VISIBLE) {
+                                binding.noticeFrame.visibility = View.VISIBLE
+                                val constraintSet = ConstraintSet()
+                                constraintSet.clone(binding.uiFrame)
+                                constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, binding.noticeFrame.id, ConstraintSet.BOTTOM)
+                                constraintSet.applyTo(binding.uiFrame)
+                                binding.myCarFrame.visibility = View.GONE
+                                binding.choiceFrame.visibility = View.GONE
+                                binding.menuBtn.visibility = View.GONE
+                                binding.selectFrame.visibility = View.VISIBLE
+                                binding.toolbar.visibility = View.VISIBLE
+                                binding.currentLocaiton.visibility = View.VISIBLE
+                                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                                return
+                            } else {
+                                if(binding.selectFrame.visibility == View.VISIBLE) {
+                                    if (System.currentTimeMillis() > backPressed + 2500) {
+                                        backPressed = System.currentTimeMillis()
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Back 버튼을 한번 더 누르면 종료합니다.",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                        return
+                                    }
+
+                                    if (System.currentTimeMillis() <= backPressed + 2500) {
+                                        finishAffinity()
+                                    }
+                                }
+                            }
+
 
                             if(binding.selectFrame.visibility == View.VISIBLE) {
                                 if (System.currentTimeMillis() > backPressed + 2500) {
@@ -173,37 +221,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             }
-            if(binding.myCarFrame.visibility == View.VISIBLE) {
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(binding.uiFrame)
-                constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-                constraintSet.applyTo(binding.uiFrame)
-                binding.myCarFrame.visibility = View.GONE
-                binding.choiceFrame.visibility = View.GONE
-                binding.menuBtn.visibility = View.GONE
-                binding.selectFrame.visibility = View.VISIBLE
-                binding.toolbar.visibility = View.VISIBLE
-                binding.currentLocaiton.visibility = View.VISIBLE
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                return
-            } else {
-                if(binding.selectFrame.visibility == View.VISIBLE) {
-                    if (System.currentTimeMillis() > backPressed + 2500) {
-                        backPressed = System.currentTimeMillis()
-                        Toast.makeText(
-                            applicationContext,
-                            "Back 버튼을 한번 더 누르면 종료합니다.",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        return
-                    }
 
-                    if (System.currentTimeMillis() <= backPressed + 2500) {
-                        finishAffinity()
-                    }
-                }
-            }
         }
 
     }
@@ -229,6 +247,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.myCarFrame.visibility = View.GONE
                 binding.searchResultFrame.visibility = View.VISIBLE
             } else {
+                if(binding.searchResultFrame.visibility == View.VISIBLE) {
+                    val constraintSet = ConstraintSet()
+                    constraintSet.clone(binding.uiFrame)
+                    constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, binding.noticeFrame.id, ConstraintSet.BOTTOM)
+                    constraintSet.applyTo(binding.uiFrame)
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    binding.toolbar.visibility = View.VISIBLE
+                    binding.menuBtn.visibility = View.GONE
+                    binding.placeInfoFrame.visibility = View.GONE
+                    binding.choiceFrame.visibility = View.GONE
+                    binding.searchResultFrame.visibility = View.GONE
+                    binding.myCarFrame.visibility = View.GONE
+                    binding.selectFrame.visibility = View.VISIBLE
+                    binding.currentLocaiton.visibility = View.VISIBLE
+                    binding.noticeFrame.visibility = View.VISIBLE
+                    binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = binding.linearLayout.marginTop - 40
+                    }
+                }
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.uiFrame)
+                constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, binding.noticeFrame.id, ConstraintSet.BOTTOM)
+                constraintSet.applyTo(binding.uiFrame)
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 binding.toolbar.visibility = View.VISIBLE
                 binding.menuBtn.visibility = View.GONE
@@ -238,6 +279,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.myCarFrame.visibility = View.GONE
                 binding.selectFrame.visibility = View.VISIBLE
                 binding.currentLocaiton.visibility = View.VISIBLE
+                binding.noticeFrame.visibility = View.VISIBLE
             }
         }
         setNavListener()
@@ -286,10 +328,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             constraintSet.clone(binding.uiFrame)
             constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, binding.myCarFrame.id, ConstraintSet.BOTTOM)
             constraintSet.applyTo(binding.uiFrame)
+            binding.noticeFrame.visibility = View.GONE
         }
         binding.parkCar.setOnClickListener {
             binding.currentLocaiton.visibility = View.GONE
             binding.selectFrame.visibility = View.GONE
+            binding.noticeFrame.visibility = View.GONE
             binding.menuBtn.visibility = View.VISIBLE
             binding.toolbar.visibility = View.GONE
             binding.choiceFrame.visibility = View.VISIBLE
@@ -553,7 +597,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        placeListFragment =
 //            SearchParkingLotFragment(keyword, result.results, placesClient, pLatitude, pLongitude, this)
 //        placeListFragment?.show(supportFragmentManager, placeListFragment?.tag)
-        val arr1: MutableList<String> = mutableListOf("거리 순", "추천 순", "인기 순")
+        val arr1: MutableList<String> = mutableListOf("거리 순", "인기 순")
         binding.sortSpinner
         val spinnerAdapter =
             ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr1)
@@ -574,9 +618,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         1 -> {
 
                         }
-                        2 -> {
-
-                        }
                         else -> {
 
                         }
@@ -589,6 +630,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
         binding.selectFrame.visibility = View.GONE
+        binding.noticeFrame.visibility = View.GONE
         binding.searchResult.visibility = View.VISIBLE
         binding.menuBtn.visibility = View.VISIBLE
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -596,8 +638,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)
-        binding.drawerLayout.closeDrawers()
-        Handler(Looper.getMainLooper()).postDelayed({adapter.addMarker()}, 100)
+        Handler(Looper.getMainLooper()).postDelayed({binding.drawerLayout.closeDrawers()}, 500)
+        removePlaceMarker()
+        adapter.addMarker()
     }
 
     fun showPlaceNav(
@@ -654,6 +697,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             params.marginEnd = 60
             params.marginStart = 60
             binding.searchResultFrame.layoutParams = params
+            binding.constraintLayout.visibility = View.VISIBLE
             binding.searchPlaceName.visibility = View.VISIBLE
             binding.sortSpinner.visibility = View.VISIBLE
             val constraintSet = ConstraintSet()
@@ -661,6 +705,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
             constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
             constraintSet.applyTo(binding.uiFrame)
+            binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = binding.linearLayout.marginTop + 40
+            }
             //주변 주차장 검색
             searchPlaces("주차장")
             binding.currentLocaiton.visibility = View.GONE
@@ -901,6 +948,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun addPlaceMarker(pLat: Double, pLng: Double, name: String, call: String, address: String, distance: Int, bitmap: Bitmap?) {
         googleMap?.let {
+//            it.clear()
+//            val markerCurrent = getMarkerIconFromDrawable(
+//                ContextCompat.getDrawable(
+//                    this@MainActivity,
+//                    R.drawable.point
+//                )
+//            )
+//            val markerCurrentLoc = LatLng(latitude, longitude)
+//            val markerOption = MarkerOptions()
+//                .position(markerCurrentLoc)
+//                .icon(markerCurrent)
+//                .anchor(0.5f, 1.0f)
+//            cMarker = it.addMarker(markerOption)
+//            pMarker = null
+
             val markerIcon = getMarkerIconFromDrawable(
                 ContextCompat.getDrawable(
                     this@MainActivity,
