@@ -1,5 +1,7 @@
 package com.example.cargive.model.network.google.search
 
+import android.graphics.Bitmap
+
 
 data class Results(
     val business_status: String,
@@ -18,5 +20,9 @@ data class Results(
     val user_ratings_total: Double,
     val vicinity: String,
     val website: String?,
-    val url: String?
+    val url: String?,
+    var call: String? = null,
+    var address: String? = null,
+    var distance : Int? = null,
+    var bitmaps: Bitmap? = null
 )

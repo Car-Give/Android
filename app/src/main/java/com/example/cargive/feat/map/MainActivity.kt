@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.MenuItem
@@ -38,6 +40,7 @@ import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
 import com.example.cargive.model.network.google.GoogleRepository
 import com.example.cargive.model.network.google.search.Results
 import com.example.cargive.model.network.naver.NaverRepository
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -51,6 +54,9 @@ import com.google.android.libraries.places.api.net.*
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.*
+import okhttp3.internal.wait
+import java.io.ByteArrayOutputStream
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -101,12 +107,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.drawerLayout.closeDrawers()
             } else {
                 if(binding.placeInfoFrame.visibility == View.VISIBLE) {
-                    binding.placeInfoFrame.visibility = View.GONE
-                    binding.searchResultFrame.visibility = View.VISIBLE
+                    if(binding.selectFrame.visibility == View.VISIBLE) {
+                        binding.placeInfoFrame.visibility = View.GONE
+                        return
+                    } else {
+                        binding.placeInfoFrame.visibility = View.GONE
+                        binding.searchResultFrame.visibility == View.VISIBLE
+                        return
+                    }
                 } else {
                     if (binding.searchResultFrame.visibility == View.VISIBLE) {
                         binding.searchResultFrame.visibility = View.GONE
+                        binding.menuBtn.visibility = View.GONE
                         binding.selectFrame.visibility = View.VISIBLE
+                        binding.toolbar.visibility = View.VISIBLE
                         binding.currentLocaiton.visibility = View.VISIBLE
                         return
                     } else {
@@ -119,24 +133,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             supportActionBar?.setDisplayHomeAsUpEnabled(true)
                             return
                         } else {
-                            if(binding.selectFrame.visibility == View.VISIBLE) {
-                                googleMap?.clear()
-                                val markerIcon = getMarkerIconFromDrawable(
-                                    ContextCompat.getDrawable(
-                                        this@MainActivity,
-                                        R.drawable.point
-                                    )
+                            binding.menuBtn.visibility = View.GONE
+                            binding.selectFrame.visibility = View.VISIBLE
+                            binding.toolbar.visibility = View.VISIBLE
+                            binding.currentLocaiton.visibility = View.VISIBLE
+                            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                            googleMap?.clear()
+                            val markerIcon = getMarkerIconFromDrawable(
+                                ContextCompat.getDrawable(
+                                    this@MainActivity,
+                                    R.drawable.point
                                 )
-                                val marker = LatLng(latitude, longitude)
-                                val markerOptions = MarkerOptions()
-                                    .position(marker)
-                                    .icon(markerIcon)
-                                    .anchor(0.5f, 1.0f)
-                                cMarker = googleMap?.addMarker(markerOptions)
-                                naverPolyline = null
-                                binding.selectFrame.visibility = View.VISIBLE
-                                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                                binding.menuBtn.visibility = View.GONE
+                            )
+                            val marker = LatLng(latitude, longitude)
+                            val markerOptions = MarkerOptions()
+                                .position(marker)
+                                .icon(markerIcon)
+                                .anchor(0.5f, 1.0f)
+                            cMarker = googleMap?.addMarker(markerOptions)
+                            pMarker = null
+
+                            if(binding.selectFrame.visibility == View.VISIBLE) {
                                 if (System.currentTimeMillis() > backPressed + 2500) {
                                     backPressed = System.currentTimeMillis()
                                     Toast.makeText(
@@ -302,6 +319,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     constraintSet.applyTo(binding.uiFrame)
                     binding.constraintLayout.visibility = View.GONE
                     binding.searchResult.visibility = View.GONE
+                    if(binding.cautionFrame.visibility == View.VISIBLE) {
+                        binding.cautionNotice.visibility = View.VISIBLE
+                    }
                 }
                 View.GONE -> {
                     Log.d("resize", "search result big")
@@ -319,6 +339,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     constraintSet.applyTo(binding.uiFrame)
                     binding.constraintLayout.visibility = View.VISIBLE
                     binding.searchResult.visibility = View.VISIBLE
+//                    binding.cautionNotice.visibility = View.VISIBLE
                 }
             }
         }
@@ -439,15 +460,89 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         location?.latitude = latitude
         binding.searchResultFrame.visibility = View.VISIBLE
 
+        var bitmap : Bitmap? = null
+
         if (result.results.isNotEmpty()) {
             val sorted = result.results.sortedBy {
                 val placeLocation = Location("place")
                 placeLocation.latitude = it.geometry.location.lat
                 placeLocation.longitude = it.geometry.location.lng
+                it.distance = location?.distanceTo(placeLocation)!!.roundToInt()
                 location?.distanceTo(placeLocation)
+            }.toMutableList()
+            val placeFields = listOf(
+                Place.Field.NAME,
+                Place.Field.ADDRESS,
+                Place.Field.PHONE_NUMBER,
+                Place.Field.PHOTO_METADATAS,
+                Place.Field.PRICE_LEVEL,
+                Place.Field.WEBSITE_URI
+            )
+            val coroutine = CoroutineScope(Dispatchers.IO)
+            coroutine.launch {
+                val resultDeferred = coroutine.async {
+                    sorted.forEach {
+                        val request = FetchPlaceRequest.newInstance(it.place_id, placeFields)
+                        placesClient.fetchPlace(request)
+                            .addOnSuccessListener { response: FetchPlaceResponse ->
+                                val place = response.place
+                                Log.d("place", "장소? : ${place.name}")
+                                Log.d("place", "주소? : ${place.address}")
+                                Log.d("place", "phone?: ${place.phoneNumber}")
+//                        Log.d("place", "price?: ${place.priceLevel}")
+//                        Log.d("place", "uri?: ${place.websiteUri}")
+                                if(place.phoneNumber.isNullOrBlank()) {
+                                    it.call = ""
+                                } else {
+                                    it.call = place.phoneNumber
+                                }
+                                it.address = place.address
+//                    Log.d("name", place.name)
+                                // Get the photo metadata.
+                                val metada = place.photoMetadatas
+                                if (metada == null || metada.isEmpty()) {
+                                    Log.d("장소 결과", "No photo metadata.")
+                                    it.bitmaps = null
+                                    return@addOnSuccessListener
+                                }
+                                val photoMetadata = metada.last()
+                                // Get the attribution text.
+                                val attributions = photoMetadata?.attributions
+
+                                // Create a FetchPhotoRequest.
+                                val photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                                    .setMaxWidth(binding.placeImg.maxWidth) // Optional.
+                                    .setMaxHeight(binding.placeImg.maxWidth) // Optional.
+                                    .build()
+                                placesClient.fetchPhoto(photoRequest)
+                                    .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
+                                        bitmap = fetchPhotoResponse.bitmap
+                                        Log.d("getbitmap", "bitmap: $bitmap")
+                                        it.bitmaps = bitmap
+                                    }.addOnFailureListener { exception: Exception ->
+                                        if (exception is ApiException) {
+                                            Log.d("getbitmap", "Place not found: " + exception.message)
+                                            val statusCode = exception.statusCode
+                                            TODO("Handle error with given status code.")
+                                        }
+                                    }
+
+                            }
+                            .addOnFailureListener {
+                                Log.e("place", "Place not found: " + it.message)
+                            }
+                    }
+                }
+                val result = resultDeferred.await()
+                delay(1000)
+                withContext(Dispatchers.Main) {
+//                    sorted.forEach {
+//                        Log.d("bitmpas", it.bitmaps.toString())
+//                    }
+                    showPlaceList(sorted)
+                }
             }
-            Log.d("정렬됨", "sorted: $sorted")
-            showPlaceList(sorted)
+//            Log.d("정렬됨", "sorted: $sorted")
         } else {
             binding.searchResult.visibility = View.GONE
             binding.cautionFrame.visibility = View.VISIBLE
@@ -501,8 +596,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)
-        adapter
         binding.drawerLayout.closeDrawers()
+        Handler(Looper.getMainLooper()).postDelayed({adapter.addMarker()}, 100)
     }
 
     fun showPlaceNav(
@@ -552,6 +647,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //프로필 화면으로 전환
         }
         nav.aroundBtn.setOnClickListener {
+            Log.d("resize", "search result big")
+            val params = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
+            params.bottomMargin = 30
+            params.topMargin = 240
+            params.marginEnd = 60
+            params.marginStart = 60
+            binding.searchResultFrame.layoutParams = params
+            binding.searchPlaceName.visibility = View.VISIBLE
+            binding.sortSpinner.visibility = View.VISIBLE
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(binding.uiFrame)
+            constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+            constraintSet.connect(binding.searchResultFrame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+            constraintSet.applyTo(binding.uiFrame)
             //주변 주차장 검색
             searchPlaces("주차장")
             binding.currentLocaiton.visibility = View.GONE
@@ -795,15 +904,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val markerIcon = getMarkerIconFromDrawable(
                 ContextCompat.getDrawable(
                     this@MainActivity,
-                    R.drawable.parking_location
+                    R.drawable.parking_locations
                 )
             )
+            var bitmapString = ""
+            val stream = ByteArrayOutputStream()
+            bitmap?.let {
+                it.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val bytes = stream.toByteArray()
+                bitmapString = Base64.encodeToString(bytes, 0)
+            }
             val marker = LatLng(pLat, pLng)
             val markerOptions = MarkerOptions()
                 .position(marker)
                 .title(name)
                 .icon(markerIcon)
-                .snippet("call:$call,address:$address,distance:$distance,bitmap:$bitmap,lat:$pLat,lng:$pLng")
+                .snippet("call:$call,address:$address,distance:$distance,bitmap:$bitmapString,lat:$pLat,lng:$pLng")
                 .anchor(0.5f, 1.0f)
             val placeMarker = it.addMarker(markerOptions)
 
@@ -846,6 +962,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .icon(markerIcon)
             .anchor(0.5f, 1.0f)
         cMarker = googleMap?.addMarker(markerOptions)
+        pMarker = null
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -900,7 +1017,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var lng = ""
         split?.forEach {
             val values = it.split(":")
-            Log.d("split", "valeus: ${values.toString()}")
+            Log.d("split", "valeus: $values")
             when(values[0]) {
                 "call" -> {
                     if(!values[1].isNullOrBlank()) {
@@ -922,8 +1039,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
                 "bitmap" -> {
+//                    Log.d("bitmapsnippet", "bitmap: ${values[1]}")
                     if(!values[1].isNullOrBlank()) {
-                        binding.placeImg.setImageBitmap(convertStringToBitmap(values[1]))
+                        val imageBytes = Base64.decode(values[1], 0)
+                        val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        binding.placeImg.setImageBitmap(image)
+                    } else {
+                        binding.placeImg.setImageDrawable(null)
                     }
                 }
                 "lat" -> {
@@ -941,18 +1063,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.placeInfoFrame.visibility = View.VISIBLE
         Log.d("lat,lng", "latitude: $lat, longitude: $lng")
         if(lng.isNotBlank() && lat.isNotBlank()) {
-            pLocation = Location(p0.title)
-            pLocation?.latitude = lat.toDouble()
-            pLocation?.longitude = lng.toDouble()
-            binding.placeInfoFrame.visibility = View.VISIBLE
-            Log.d("marker", p0.title.toString())
-            binding.navigatePlace.setOnClickListener {
-                Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
-                routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
-            }
-            binding.navFrame.setOnClickListener {
-                Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
-                routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+            if(binding.selectFrame.visibility == View.VISIBLE) {
+                binding.placeInfoFrame.visibility = View.GONE
+
+            } else {
+                pMarker?.setIcon(getMarkerIconFromDrawable(
+                    ContextCompat.getDrawable(
+                        this@MainActivity,
+                        R.drawable.parking_locations
+                    )
+                ))
+                pMarker = p0
+                p0.setIcon(getMarkerIconFromDrawable(
+                    ContextCompat.getDrawable(
+                        this@MainActivity,
+                        R.drawable.parking_location
+                    )
+                ))
+                pLocation = Location(p0.title)
+                pLocation?.latitude = lat.toDouble()
+                pLocation?.longitude = lng.toDouble()
+                binding.placeInfoFrame.visibility = View.VISIBLE
+                Log.d("marker", p0.title.toString())
+                binding.navigatePlace.setOnClickListener {
+                    Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+                    routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+                }
+                binding.navFrame.setOnClickListener {
+                    Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
+                    routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
+                }
             }
         } else {
             binding.navigatePlace.setOnClickListener {

@@ -99,17 +99,17 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/round_rect"
                 android:orientation="vertical"
-                android:visibility="gone"
-                android:paddingBottom="10dp">
+                android:paddingBottom="10dp"
+                android:visibility="gone">
 
                 <View
                     android:layout_width="100dp"
                     android:layout_height="3dp"
+                    android:layout_marginTop="5dp"
                     android:background="#cccccc"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="5dp"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout"
@@ -296,6 +296,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/nav_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="12dp"
@@ -303,7 +304,6 @@
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/round_follow"
                     android:gravity="center"
-                    android:id="@+id/nav_frame"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/info_frame">
 
@@ -540,6 +540,30 @@
 
                 </LinearLayout>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/caution_notice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="80dp"
+                android:background="@drawable/round_rect"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="2dp"
+                    android:background="@drawable/round_rect"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="현재 위치 반경 2km내에 주차장이 없습니다."
+                    app:drawableStartCompat="@drawable/caution_small" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

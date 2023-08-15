@@ -41,10 +41,11 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
 
     inner class ViewHolder(private val binding: ParkingLotListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(datas: Results){
+            Log.d("bitmpas", datas.bitmaps.toString())
             binding.placeName.text = datas.name
-            var bitmap: Bitmap? = null
-            var phoneNumber: String = ""
-            var address: String = ""
+//            var bitmap: Bitmap? = null
+//            var phoneNumber: String = ""
+//            var address: String = ""
             val pLocation = Location("place")
             pLocation.latitude = datas.geometry.location.lat
             pLocation.longitude = datas.geometry.location.lng
@@ -52,82 +53,97 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             val distance = cLocation.distanceTo(pLocation).roundToInt()
             binding.placeDistance.text = distance.toString()+"m"
             val main = activity as MainActivity
+            if(datas.call.isNullOrBlank()) {
+                binding.callFrame.visibility = View.GONE
+            } else {
+                binding.internalCall.text = datas.call
+            }
+            datas.bitmaps?.let {
+                binding.placeImg.setImageBitmap(it)
+            }
+            binding.detailAddress.text = datas.address
             binding.placeInfoFrame.setOnClickListener {
-                main.showPlaceNav(datas, distance, bitmap, phoneNumber, address, datas.place_id)
+                main.showPlaceNav(datas, distance, datas.bitmaps, datas.call!!, datas.address!!, datas.place_id)
 //
             }
 
-
-//            val placeFields = mutableListOf(Place.Field.ID, Place.Field.NAME)
+//
+////            val placeFields = mutableListOf(Place.Field.ID, Place.Field.NAME)
+////            val request = FetchPlaceRequest.newInstance(datas.place_id, placeFields)
+////
+////            val fields = listOf(Place.Field.PHOTO_METADATAS)
+////            val placeRequest = FetchPlaceRequest.newInstance(datas.place_id, fields)
+//            val placeFields = listOf(
+//                Place.Field.NAME,
+//                Place.Field.ADDRESS,
+//                Place.Field.PHONE_NUMBER,
+//                Place.Field.PHOTO_METADATAS,
+//                Place.Field.PRICE_LEVEL,
+//                Place.Field.WEBSITE_URI
+//            )
 //            val request = FetchPlaceRequest.newInstance(datas.place_id, placeFields)
 //
-//            val fields = listOf(Place.Field.PHOTO_METADATAS)
-//            val placeRequest = FetchPlaceRequest.newInstance(datas.place_id, fields)
-            val placeFields = listOf(
-                Place.Field.NAME,
-                Place.Field.ADDRESS,
-                Place.Field.PHONE_NUMBER,
-                Place.Field.PHOTO_METADATAS,
-                Place.Field.PRICE_LEVEL,
-                Place.Field.WEBSITE_URI
-            )
-            val request = FetchPlaceRequest.newInstance(datas.place_id, placeFields)
-
-            client.fetchPlace(request)
-                .addOnSuccessListener { response: FetchPlaceResponse ->
-                    val place = response.place
-//                    Log.d("name", "장소? : ${place.name}")
-//                    Log.d("name", "주소? : ${place.address}")
-//                    Log.d("plus", "phone?: ${place.phoneNumber}")
-//                    Log.d("price", "price?: ${place.priceLevel}")
-//                    Log.d("price", "uri?: ${place.websiteUri}")
-                    if(place.phoneNumber.isNullOrBlank()) {
-                        binding.callFrame.visibility = View.GONE
-                    } else {
-                        binding.internalCall.text = place.phoneNumber
-                        phoneNumber = place.phoneNumber as String
-                    }
-                    binding.detailAddress.text = place.address
-                    address = place.address as String
-//                    Log.d("name", place.name)
-                    // Get the photo metadata.
-                    val metada = place.photoMetadatas
-                    if (metada == null || metada.isEmpty()) {
-                        main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name, binding.internalCall.text.toString(), address, distance, bitmap)
-                        Log.d("장소 결과", "No photo metadata.")
-                        return@addOnSuccessListener
-                    }
-                    val photoMetadata = metada.last()
-                    // Get the attribution text.
-                    val attributions = photoMetadata?.attributions
-
-                    // Create a FetchPhotoRequest.
-                    val photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(binding.placeImg.maxWidth) // Optional.
-                        .setMaxHeight(binding.placeImg.maxWidth) // Optional.
-                        .build()
-                    client.fetchPhoto(photoRequest)
-                        .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
-                            bitmap = fetchPhotoResponse.bitmap
-                            binding.placeImg.setImageBitmap(bitmap)
-                            main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name, binding.internalCall.text.toString(), address, distance, bitmap)
-                        }.addOnFailureListener { exception: Exception ->
-                            if (exception is ApiException) {
-                                Log.e("place", "Place not found: " + exception.message)
-                                val statusCode = exception.statusCode
-                                TODO("Handle error with given status code.")
-                            }
-                        }
-
-                }
-                .addOnFailureListener {
-                    Log.e("place", "Place not found: " + it.message)
-                }
+//            client.fetchPlace(request)
+//                .addOnSuccessListener { response: FetchPlaceResponse ->
+//                    val place = response.place
+////                    Log.d("name", "장소? : ${place.name}")
+////                    Log.d("name", "주소? : ${place.address}")
+////                    Log.d("plus", "phone?: ${place.phoneNumber}")
+////                    Log.d("price", "price?: ${place.priceLevel}")
+////                    Log.d("price", "uri?: ${place.websiteUri}")
+//                    if(place.phoneNumber.isNullOrBlank()) {
+//                        binding.callFrame.visibility = View.GONE
+//                    } else {
+//                        binding.internalCall.text = place.phoneNumber
+//                        phoneNumber = place.phoneNumber as String
+//                    }
+//                    binding.detailAddress.text = place.address
+//                    address = place.address as String
+////                    Log.d("name", place.name)
+//                    // Get the photo metadata.
+//                    val metada = place.photoMetadatas
+//                    if (metada == null || metada.isEmpty()) {
+//                        main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name, binding.internalCall.text.toString(), address, distance, bitmap)
+//                        Log.d("장소 결과", "No photo metadata.")
+//                        return@addOnSuccessListener
+//                    }
+//                    val photoMetadata = metada.last()
+//                    // Get the attribution text.
+//                    val attributions = photoMetadata?.attributions
+//
+//                    // Create a FetchPhotoRequest.
+//                    val photoRequest = FetchPhotoRequest.builder(photoMetadata)
+//                        .setMaxWidth(binding.placeImg.maxWidth) // Optional.
+//                        .setMaxHeight(binding.placeImg.maxWidth) // Optional.
+//                        .build()
+//                    client.fetchPhoto(photoRequest)
+//                        .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
+//                            bitmap = fetchPhotoResponse.bitmap
+//                            binding.placeImg.setImageBitmap(bitmap)
+//                            main.addPlaceMarker(datas.geometry.location.lat, datas.geometry.location.lng, datas.name, binding.internalCall.text.toString(), address, distance, bitmap)
+//                        }.addOnFailureListener { exception: Exception ->
+//                            if (exception is ApiException) {
+//                                Log.e("place", "Place not found: " + exception.message)
+//                                val statusCode = exception.statusCode
+//                                TODO("Handle error with given status code.")
+//                            }
+//                        }
+//
+//                }
+//                .addOnFailureListener {
+//                    Log.e("place", "Place not found: " + it.message)
+//                }
 
 
         }
 
 
+    }
+    fun addMarker() {
+        val main = activity as MainActivity
+        for(data in currentList) {
+            main.addPlaceMarker(data.geometry.location.lat, data.geometry.location.lng, data.name, data.call!!, data.address!!, data.distance!!, data.bitmaps)
+        }
 
     }
     override fun getItemViewType(position: Int): Int {
