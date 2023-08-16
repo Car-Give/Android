@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".feat.login.LoginActivity">
 
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="45dp"

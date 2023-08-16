@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".feat.login.Myapplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -32,9 +33,20 @@
         <activity
             android:name="com.example.cargive.feat.map.MainActivity"
             android:exported="false" />
-        <meta-data
-            android:name="com.kakao.sdk.AppKey"
-            android:value="494ad5f3ae6c3e4afb10cbe2fde6780f" />
+
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <data android:host="oauth"
+                    android:scheme="@string/kakao_oauth_host" />
+            </intent-filter>
+        </activity>
 
     </application>
 </manifest>
