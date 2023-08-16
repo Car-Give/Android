@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 } else {
                     if (binding.searchResultFrame.visibility == View.VISIBLE) {
                         setVisibility(0)
+                        Log.d("검색 결과 제거", "검색 결과 제거")
                         binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                             topMargin = binding.linearLayout.marginTop - 40
                         }
@@ -694,6 +695,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             val markerOptions = MarkerOptions()
                                 .position(marker)
                                 .icon(markerIcon)
+                                .title("현재 위치")
                                 .anchor(0.5f, 1.0f)
                             cMarker = it.addMarker(markerOptions)
                             it.moveCamera(CameraUpdateFactory.newLatLng(marker))
@@ -756,6 +758,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val markerOptions = MarkerOptions()
                         .position(marker)
                         .icon(markerIcon)
+                        .title("현재 위치")
                         .anchor(0.5f, 1.0f)
                     cMarker = it.addMarker(markerOptions)
 //                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
@@ -861,6 +864,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val markerOptions = MarkerOptions()
             .position(marker)
             .icon(markerIcon)
+            .title("현재 위치")
             .anchor(0.5f, 1.0f)
         cMarker = googleMap?.addMarker(markerOptions)
         pMarker = null
@@ -898,6 +902,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onMarkerClick(p0: Marker): Boolean {
         binding.searchResultFrame.visibility = View.GONE
         binding.placeName.text = p0.title
+        if(p0.title == "현재 위치") {
+            return true
+        }
         val split = p0.snippet?.split(",")
         Log.d("split", split.toString())
         var lat = ""
