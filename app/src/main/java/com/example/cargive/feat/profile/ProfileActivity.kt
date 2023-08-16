@@ -21,6 +21,23 @@ class ProfileActivity : AppCompatActivity() {
             val intent=Intent(this,ProfilecarActivity::class.java)
             startActivity(intent)
         }
+        binding.alarm.setOnClickListener {
+            val intent=Intent(this,AlarmActivity::class.java)
+            startActivity(intent)
+        }
+        binding.withdrawProfil.setOnClickListener{
+            val intent=Intent(this,WithdrawActivity::class.java)
+            startActivity(intent)
+        }
+        binding.setting.setOnClickListener {
+            val intent=Intent(this,SettingActivity::class.java)
+            startActivity(intent)
+        }
+        binding.profil.setOnClickListener {
+            val intent=Intent(this,MypageActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.back.setOnClickListener { finish() }
 
     }

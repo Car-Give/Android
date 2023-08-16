@@ -5,9 +5,11 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -18,9 +20,21 @@
         android:theme="@style/Theme.Design.Light.NoActionBar"
         tools:targetApi="33">
         <activity
-            android:name=".feat.profile.PluscarActivity"
-            android:screenOrientation="portrait"
+            android:name=".feat.profile.MypageActivity"
             android:exported="false" />
+        <activity
+            android:name=".feat.profile.SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".feat.profile.WithdrawActivity"
+            android:exported="false" />
+        <activity
+            android:name=".feat.profile.AlarmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".feat.profile.PluscarActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".feat.profile.ProfilecarActivity"
             android:exported="false" />
@@ -42,15 +56,16 @@
         <activity
             android:name=".feat.map.MainActivity"
             android:exported="false" />
+
         <provider
-            android:authorities="com.example.cargive.fileprovider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.cargive.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

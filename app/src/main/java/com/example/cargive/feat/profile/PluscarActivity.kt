@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
 import com.example.cargive.R
 import com.example.cargive.databinding.ActivityPluscarBinding
 import com.gun0912.tedpermission.PermissionListener
@@ -34,6 +35,7 @@ class PluscarActivity : AppCompatActivity() {
         lateinit var prefs: Carfile
     }
     lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    lateinit var resultLauncher_g: ActivityResultLauncher<Intent>
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +67,48 @@ class PluscarActivity : AppCompatActivity() {
             }
         binding.backItem.setOnClickListener {finish()}
         binding.callImg.setOnClickListener {
-            requestPermission()
+            //requestPermission()
+            requestGallary()
         }
+        resultLauncher_g=
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+                if(it.resultCode== RESULT_OK){
+                    it.data?.data?.let { uri ->
+                        val imageUri:Uri?=it.data?.data
+                        if(imageUri!=null){
+                            Glide.with(applicationContext).load(imageUri).override(500,500)
+                                .into(binding.callImg)
+                        }
+                    }
+                }
+            }
 
+    }
+
+    private fun requestGallary() {
+        val permission= object : PermissionListener {
+            override fun onPermissionGranted() {
+                //Toast.makeText(this@PluscarActivity,"갤러리 허용",Toast.LENGTH_SHORT).show()
+                move_gallery()
+            }
+
+            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                Toast.makeText(this@PluscarActivity, "갤러리 권한이 거부 되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        TedPermission.create()
+            .setPermissionListener(permission)
+            .setDeniedMessage("갤러리 권한을 허용해 주세요")
+            .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            .check()
+    }
+
+        private fun move_gallery() {
+        val intent=Intent(Intent.ACTION_PICK)
+        intent.data=MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        intent.type="image/*"
+        resultLauncher_g.launch(intent)
     }
 
     private fun saveImageFile(filename: String, mimeType: String, bitmap: Bitmap):Uri? {
