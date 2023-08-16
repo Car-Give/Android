@@ -63,6 +63,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             }
             binding.detailAddress.text = datas.address
             binding.placeInfoFrame.setOnClickListener {
+                Log.d("bitmaps", datas.bitmaps.toString())
                 main.showPlaceNav(datas, distance, datas.bitmaps, datas.call!!, datas.address!!, datas.place_id)
 //
             }
