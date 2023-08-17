@@ -2,7 +2,6 @@ package com.example.cargive.model.network.google
 
 import android.util.Log
 import com.example.cargive.BuildConfig
-import com.example.cargive.model.network.google.route.PlaceRouteResponseModel
 import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -54,25 +53,6 @@ class GoogleRepository {
             result.body()
         } catch (e: Exception) {
             Log.d("search error", "레포 필터없는 검색 error: ${e.message}")
-            null
-        }
-    }
-
-    fun getPlaceRouteResult(latitude: Double, longitude: Double,origin: String): PlaceRouteResponseModel? {
-        val queryMap = mutableMapOf<String, String>()
-        queryMap.put("destination", "$latitude,$longitude")
-        queryMap.put("origin", "place_id:$origin")
-        queryMap.put("key", BuildConfig.webKey)
-        queryMap.put("mode", "transit")
-
-        val routes = directionApi.getPlaceRouteInfo(queryMap)
-        return try {
-            val result = routes.execute()
-            Log.d("route success", "경로 검색 결과: ${result.code()}")
-            Log.d("route success", "경로 검색 결과: ${result.message()}")
-            result.body()
-        } catch (e: Exception) {
-            Log.d("search error", "경로 검색 error: ${e.message}")
             null
         }
     }

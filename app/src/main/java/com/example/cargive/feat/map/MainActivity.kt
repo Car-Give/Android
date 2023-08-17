@@ -344,19 +344,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val coroutine = CoroutineScope(Dispatchers.IO)
         coroutine.launch {
             if (!this@MainActivity.isFinishing) {
-//                val resultDeferred = coroutine.async {
-//                    googleRepository.getPlaceRouteResult(latitude, longitude, placeId!!)
-//                }
-//                val result = resultDeferred.await()
-//                Log.d("search result", result.toString())
-//                result?.let {
-//                    withContext(Dispatchers.Main) {
-//                        val polylineOptions = PolylineOptions()
-//                        polylineOptions.addAll(PolyUtil.decode(it.routes[0].overview_polyline.points))
-//                        polylineOptions.color(Color.BLUE)
-//                        polyline = googleMap?.addPolyline(polylineOptions)
-//                    }
-//                }
                 val placeLocation = Location(name)
                 placeLocation.latitude = lat
                 placeLocation.longitude = lng
@@ -414,6 +401,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 it.distance = location?.distanceTo(placeLocation)!!.roundToInt()
                 location?.distanceTo(placeLocation)
             }.toMutableList()
+            val appropriateSorted = sorted.filter {
+                it.distance!! <= 2000
+            }
             val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS,
                 Place.Field.PHONE_NUMBER, Place.Field.PHOTO_METADATAS,
                 Place.Field.PRICE_LEVEL, Place.Field.WEBSITE_URI
@@ -421,7 +411,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val coroutine = CoroutineScope(Dispatchers.IO)
             coroutine.launch {
                 val resultDeferred = coroutine.async {
-                    sorted.forEach {
+                    appropriateSorted.forEach {
                         val request = FetchPlaceRequest.newInstance(it.place_id, placeFields)
                         placesClient.fetchPlace(request)
                             .addOnSuccessListener { response: FetchPlaceResponse ->
@@ -473,7 +463,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val result = resultDeferred.await()
                 delay(1000)
                 withContext(Dispatchers.Main) {
-                    showPlaceList(sorted)
+                    showPlaceList(appropriateSorted)
                 }
             }
         } else {
@@ -1072,16 +1062,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         constraintSet.clone(binding.uiFrame)
         constraintSet.connect(binding.linearLayout.id, ConstraintSet.TOP, binding.noticeFrame.id, ConstraintSet.BOTTOM)
         constraintSet.applyTo(binding.uiFrame)
-    }
-
-    fun convertStringToBitmap(encodedBitmap: String): Bitmap? {
-        try {
-            val decodedBytes = Base64.decode(encodedBitmap, Base64.DEFAULT)
-            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
     }
 
 }
