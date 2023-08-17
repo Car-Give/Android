@@ -61,6 +61,7 @@ import kotlinx.coroutines.*
 import okhttp3.internal.wait
 import java.io.ByteArrayOutputStream
 import kotlin.math.roundToInt
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -286,6 +287,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //
 //            }
 //        }
+
+        val arr1: MutableList<String> = mutableListOf("거리 순", "인기 순")
+        val spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr1)
+        binding.sortSpinner.adapter = spinnerAdapter
+        binding.sortSpinner.setSelection(0)
+        binding.sortSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    when (position) {
+                        0 -> {
+
+                        }
+                        1 -> {
+
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+            }
     }
 
 
@@ -294,11 +325,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         coroutine.launch {
             if (!this@MainActivity.isFinishing && longitude != 0.0 && latitude != 0.0) {
                 val resultDeferred = coroutine.async {
-                    googleRepository.getPlaceInfoByQuery(
-                        keyword = keyword,
-                        latitude = latitude,
-                        longitude = longitude
-                    )
+                    googleRepository.getPlaceInfoByQuery(keyword = keyword, latitude = latitude, longitude = longitude)
                 }
                 val result = resultDeferred.await()
                 Log.d("search result", result.toString())
@@ -387,13 +414,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 it.distance = location?.distanceTo(placeLocation)!!.roundToInt()
                 location?.distanceTo(placeLocation)
             }.toMutableList()
-            val placeFields = listOf(
-                Place.Field.NAME,
-                Place.Field.ADDRESS,
-                Place.Field.PHONE_NUMBER,
-                Place.Field.PHOTO_METADATAS,
-                Place.Field.PRICE_LEVEL,
-                Place.Field.WEBSITE_URI
+            val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS,
+                Place.Field.PHONE_NUMBER, Place.Field.PHOTO_METADATAS,
+                Place.Field.PRICE_LEVEL, Place.Field.WEBSITE_URI
             )
             val coroutine = CoroutineScope(Dispatchers.IO)
             coroutine.launch {
@@ -463,37 +486,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        placeListFragment =
 //            SearchParkingLotFragment(keyword, result.results, placesClient, pLatitude, pLongitude, this)
 //        placeListFragment?.show(supportFragmentManager, placeListFragment?.tag)
-        val arr1: MutableList<String> = mutableListOf("거리 순", "인기 순")
-        binding.sortSpinner
-        val spinnerAdapter =
-            ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr1)
-        binding.sortSpinner.adapter = spinnerAdapter
-        binding.sortSpinner.setSelection(0)
-        binding.sortSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    when (position) {
-                        0 -> {
 
-                        }
-                        1 -> {
-
-                        }
-                        else -> {
-
-                        }
-                    }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                }
-            }
         binding.selectFrame.visibility = View.GONE
         binding.noticeFrame.visibility = View.GONE
         binding.searchResult.visibility = View.VISIBLE
@@ -508,14 +501,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         adapter.addMarker()
     }
 
-    fun showPlaceNav(
-        result: Results,
-        distance: Int,
-        bitmap: Bitmap?,
-        phoneNumber: String,
-        address: String,
-        placeId: String
-    ) {
+    fun showPlaceNav(result: Results, distance: Int, bitmap: Bitmap?,
+                     phoneNumber: String, address: String, placeId: String) {
         binding.placeImg.setImageBitmap(null)
         binding.searchResultFrame.visibility = View.GONE
         binding.placeName.text = result.name
@@ -1043,6 +1030,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (System.currentTimeMillis() <= backPressed + 2500) {
             finishAffinity()
+            exitProcess(0)
         }
     }
 
