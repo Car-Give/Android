@@ -12,5 +12,8 @@
     <color name="colorAccent">#00FF00</color>
     <color name="mainblue">#1E60D1</color>
     <color name="mainblue2">#0080F5</color>
+    <color name="yellow"> #FFEB02</color>
+    <color name="green"> #00BF18</color>
+
 
 </resources>
