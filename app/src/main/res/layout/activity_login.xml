@@ -13,13 +13,13 @@
         android:layout_marginStart="127dp"
         android:layout_marginTop="97dp"
         android:layout_marginEnd="126dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="100dp"
         android:text="소셜로 로그인하기"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/kakao_button"
+        app:layout_constraintBottom_toBottomOf="@id/kakao_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -38,24 +38,24 @@
         app:layout_constraintVertical_bias="0.433" />
 
 
-        <Button
-            android:id="@+id/kakao_button"
-            android:layout_width="240dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="400dp"
-            android:layout_marginEnd="60dp"
-            android:layout_marginBottom="353dp"
-            android:background="@drawable/button_round"
-            android:backgroundTint="@color/yellow"
-            android:text="카카오톡 로그인"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+    <Button
+        android:id="@+id/kakao_button"
+        android:layout_width="240dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="353dp"
+        android:background="@drawable/button_round"
+        android:backgroundTint="@color/yellow"
+        android:text="카카오톡 로그인"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/naver_button"

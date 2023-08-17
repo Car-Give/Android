@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.cargive">
@@ -14,39 +15,40 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         tools:targetApi="33">
-
+        <activity
+            android:name=".feat.login.complete_login_screen"
+            android:exported="false" />
         <!-- IntroActivity를 메인 액티비티로 지정 -->
         <activity
-            android:name="com.example.cargive.feat.login.IntroActivity"
+            android:name=".feat.login.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- LoginActivity와 MainActivity 등 다른 액티비티 선언 -->
+        </activity> <!-- LoginActivity와 MainActivity 등 다른 액티비티 선언 -->
         <activity
-            android:name="com.example.cargive.feat.login.LoginActivity"
+            android:name=".feat.login.LoginActivity"
             android:exported="false" />
-
         <activity
             android:name="com.example.cargive.feat.map.MainActivity"
             android:exported="false" />
-
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
-                <data android:host="oauth"
+                <data
+                    android:host="oauth"
                     android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
         </activity>
-
     </application>
+
 </manifest>
