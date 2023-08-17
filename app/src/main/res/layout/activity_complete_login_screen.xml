@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feat.login.complete_login_screen">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="80.25dp"
+        android:layout_height="91.5dp"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="206dp"
+        android:layout_marginEnd="149dp"
+        android:layout_marginBottom="505dp"
+        android:src="@drawable/recoginize_pin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.536"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.433" />
+
+    <View
+        android:id="@+id/ellipse_514"
+        android:layout_width="329dp"
+        android:layout_height="301dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="249dp"
+        android:background="@drawable/ellipse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.269"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="129dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="146dp"
+        android:gravity="top"
+        android:text="회원이 되신 것을 축하드립니다!🎉"
+        android:textColor="@color/mainblue2"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ellipse_514"
+        app:layout_constraintEnd_toEndOf="@+id/ellipse_514"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/ellipse_514"
+        app:layout_constraintTop_toTopOf="@+id/ellipse_514"
+        app:layout_constraintVertical_bias="0.933" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="86dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="86dp"
+        android:layout_marginBottom="122dp"
+        android:gravity="top"
+        android:lineSpacingExtra="-5sp"
+        android:text="내차를 조금 더 쉽고 빠르게 찾는 "
+        app:layout_constraintBottom_toBottomOf="@+id/ellipse_514"
+        app:layout_constraintEnd_toEndOf="@+id/ellipse_514"
+        app:layout_constraintStart_toStartOf="@+id/ellipse_514"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <Button
+        android:id="@+id/move_main_button"
+        android:layout_width="131dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="213dp"
+        android:layout_marginTop="650dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/button_round"
+        android:text="메인화면으로 가기 ➔"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
