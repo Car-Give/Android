@@ -3,6 +3,7 @@ package com.example.cargive.feat.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -40,6 +41,8 @@ import com.example.cargive.BuildConfig
 import com.example.cargive.R
 import com.example.cargive.databinding.ActivityMainBinding
 import com.example.cargive.databinding.MainNavheaderBinding
+import com.example.cargive.feat.etc.AnnoucementActivity
+import com.example.cargive.feat.etc.UsageHistoryActivity
 import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
 import com.example.cargive.model.network.google.GoogleRepository
 import com.example.cargive.model.network.google.search.Results
@@ -554,10 +557,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         }
         nav.useHistory.setOnClickListener {
-
+            val intent = Intent(this, UsageHistoryActivity::class.java)
+            startActivity(intent)
         }
         nav.announcement.setOnClickListener {
-
+            val intent = Intent(this, AnnoucementActivity::class.java)
+            startActivity(intent)
         }
         nav.customerService.setOnClickListener {
 
