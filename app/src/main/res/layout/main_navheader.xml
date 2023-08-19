@@ -18,11 +18,12 @@
         <!-- 네비게이션 윗부분  -->
         <ImageView
             android:id="@+id/notice_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="40dp"
-            android:src="@drawable/notice"
+            android:scaleType="fitCenter"
+            android:src="@drawable/bell"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,7 +60,7 @@
                     android:layout_weight="1.3"
                     android:adjustViewBounds="true"
                     android:background="@drawable/round"
-                    android:src="@drawable/notice" />
+                    android:src="@drawable/bell" />
 
                 <LinearLayout
                     android:layout_width="0dp"

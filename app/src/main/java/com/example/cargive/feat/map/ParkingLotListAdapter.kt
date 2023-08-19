@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cargive.R
 import com.example.cargive.databinding.ParkingLotListBinding
 import com.example.cargive.model.network.google.search.Results
 import com.google.android.gms.common.api.ApiException
@@ -65,6 +66,16 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             binding.placeInfoFrame.setOnClickListener {
                 Log.d("bitmaps", datas.bitmaps.toString())
                 main.showPlaceNav(datas, distance, datas.bitmaps, datas.call!!, datas.address!!, datas.place_id)
+            }
+
+            binding.placeLike.setOnClickListener {
+                if(binding.placeLike.tag == "empty") {
+                    binding.placeLike.setImageResource(R.drawable.star_fill)
+                    binding.placeLike.tag = "fill"
+                } else {
+                    binding.placeLike.setImageResource(R.drawable.star_empty)
+                    binding.placeLike.tag = "empty"
+                }
             }
 
 //

@@ -300,7 +300,7 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1.7">
@@ -314,7 +314,18 @@
                             android:layout_marginEnd="8dp"
                             android:adjustViewBounds="true" />
 
-                    </LinearLayout>
+                        <ImageView
+                            android:id="@+id/place_like"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/star_empty"
+                            android:scaleType="fitCenter"
+                            app:layout_constraintEnd_toEndOf="@+id/place_img"
+                            android:layout_margin="4dp"
+                            android:tag="empty"
+                            app:layout_constraintTop_toTopOf="@+id/place_img"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 </LinearLayout>

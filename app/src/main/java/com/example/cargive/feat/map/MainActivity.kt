@@ -969,12 +969,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Log.d("lat,lng","latitude: ${pLocation!!.latitude}, longitude: ${pLocation!!.longitude}")
                     routePlace(binding.placeName.text.toString(), pLocation!!.latitude, pLocation!!.longitude)
                 }
+                binding.placeLike.setOnClickListener {
+                    if(binding.placeLike.tag == "empty") {
+                        binding.placeLike.setImageResource(R.drawable.star_fill)
+                        binding.placeLike.tag = "fill"
+                    } else {
+                        binding.placeLike.setImageResource(R.drawable.star_empty)
+                        binding.placeLike.tag = "empty"
+                    }
+                }
             }
         } else {
             binding.navigatePlace.setOnClickListener {
 
             }
             binding.navFrame.setOnClickListener {
+
+            }
+            binding.placeLike.setOnClickListener {
 
             }
         }
