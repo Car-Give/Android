@@ -46,7 +46,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:text="공지사항!"
-                    app:drawableStartCompat="@drawable/announcement" />
+                    app:drawableStartCompat="@drawable/announcement_resize" />
             </LinearLayout>
 
             <LinearLayout
@@ -378,7 +378,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:drawableTop="@drawable/car_location"
+                        android:drawableTop="@drawable/car_location_resize"
                         android:paddingHorizontal="40dp"
                         android:paddingVertical="20dp"
                         android:text="주차위치 인식"
@@ -396,7 +396,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:drawableTop="@drawable/search_blue"
+                        android:drawableTop="@drawable/search_blue_resize"
                         android:paddingHorizontal="40dp"
                         android:paddingVertical="20dp"
                         android:text="  주차장 검색"
