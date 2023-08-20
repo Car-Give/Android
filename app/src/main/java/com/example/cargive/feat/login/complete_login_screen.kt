@@ -16,7 +16,7 @@ class complete_login_screen : AppCompatActivity() {
         viewBinding = ActivityCompleteLoginScreenBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        viewBinding.moveMainButton.setOnClickListener {// 버튼 누를 때 메인화면 이동 
+        viewBinding.moveMainButton.setOnClickListener {// 버튼 누를 때 메인화면 이동
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
