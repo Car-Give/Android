@@ -10,5 +10,16 @@ class WithdrawActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        with(binding){
+            back.setOnClickListener {
+                finish()
+            }
+            withdrawCheck.setOnCheckedChangeListener { button, isChecked ->
+                if(isChecked){withdrawBtn.setBackgroundResource(R.drawable.withdraw_blue) }
+                else{
+                    withdrawBtn.setBackgroundResource(R.drawable.withdraw_gray)
+                }
+            }
+        }
     }
 }

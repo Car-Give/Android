@@ -5,5 +5,148 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".feat.profile.SettingActivity">
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:clipToOutline="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <!-- Auto layout, variables, and unit scale are not yet supported -->
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/frame_40078"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="12dp"
+            android:clipToOutline="true">
+            <!-- Auto layout, variables, and unit scale are not yet supported -->
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/back"
+                android:clipToOutline="true" />
+            <!-- Auto layout, variables, and unit scale are not yet supported -->
 
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/some_id"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal|top"
+            android:text="환경 설정"
+            android:textAppearance="@style/some_id"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/t"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="앱 설정"
+        android:textStyle="bold"
+        android:layout_marginTop="28dp"
+        android:layout_marginLeft="13dp"
+        android:textSize="14sp"
+        />
+    <RelativeLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/t"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/frame_40229"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="144dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:text="SMS 알림"
+            android:gravity="center_vertical"
+            android:textStyle="bold"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@color/bottom_gray"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+    <RelativeLayout
+        app:layout_constraintTop_toBottomOf="@id/frame_40229"
+        app:layout_constraintLeft_toLeftOf="@id/t"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/frame_4022"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:text="푸시 알림"
+            android:gravity="center_vertical"
+            android:textStyle="bold"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@color/bottom_gray"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+    <RelativeLayout
+        app:layout_constraintTop_toBottomOf="@id/frame_4022"
+        app:layout_constraintLeft_toLeftOf="@id/t"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/frame_402"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:text="앱 버전 정보"
+            android:gravity="center_vertical"
+            android:textStyle="bold"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@color/bottom_gray"
+            android:layout_alignParentBottom="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/blue"
+            android:text="1.1.1"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            />
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

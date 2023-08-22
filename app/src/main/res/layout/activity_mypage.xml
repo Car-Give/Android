@@ -61,14 +61,98 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="15dp"/>
-    <TextView
+    <EditText
+        android:id="@+id/user_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/text_id"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="15dp"
-        android:text="@string/user_id"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="12sp"
+        android:hint="user_id"/>
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이름"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/user_id"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"/>
+    <EditText
+        android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text_name"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="12sp"
+        android:hint="user_name"/>
+    <TextView
+        android:id="@+id/text_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="전화번호"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/user_name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"/>
+    <EditText
+        android:id="@+id/user_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text_phone"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="12sp"
+        android:hint="user_phone"/>
+    <TextView
+        android:id="@+id/text_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이메일"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/user_phone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"/>
+    <EditText
+        android:id="@+id/user_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text_email"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="12sp"
+        android:hint="user_email"/>
 
+    <ImageView
+        android:id="@+id/mypage_btn"
+        android:layout_width="336dp"
+        android:layout_height="55dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="@drawable/mypage_gray"
+        android:layout_marginBottom="15dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="연동된 소셜"
+        app:layout_constraintTop_toBottomOf="@id/user_email"
+        app:layout_constraintLeft_toLeftOf="@id/user_email"
+        android:layout_marginTop="15dp"/>
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
