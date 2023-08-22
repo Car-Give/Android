@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "919683755236",
+    "project_id": "cargiveproject",
+    "storage_bucket": "cargiveproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919683755236:android:2b310dcdd65e0d4e0b90f1",
+        "android_client_info": {
+          "package_name": "com.example.cargive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "919683755236-otvnngq64a445dn5vtniijath82vlf1l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB09MolhS8Qu8upj3GprGmVPHoPspXE4aI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "919683755236-otvnngq64a445dn5vtniijath82vlf1l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,7 +21,6 @@ class complete_login_screen : AppCompatActivity() {
             startActivity(intent)
         }
 
-
     }
 
 }
