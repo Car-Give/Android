@@ -634,7 +634,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        setLocationUpdates()
+        requestLocation()
+//        setLocationUpdates()
 //        initMap()
 //        updateLocation()
 //        getDeviceLocation()
@@ -648,6 +649,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            setLocationUpdates()
             googleMap?.setOnMarkerClickListener(this)
             requestLocation()
+//            setLocationUpdates()
 //            showCurrentPlace()
 //            updateLocation()
 //            getDeviceLocation()
@@ -682,6 +684,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             cMarker = it.addMarker(markerOptions)
                             it.moveCamera(CameraUpdateFactory.newLatLng(marker))
                             it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+                            setLocationUpdates()
                             val placesClient = Places.createClient(this)
                             val request = FindCurrentPlaceRequest.builder(listOf(Place.Field.ID))
                                 .build()
@@ -708,6 +711,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @SuppressLint("MissingPermission")
     fun setLocationUpdates() {
+        Log.d("위치 update", "현재 위치 update")
         locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
@@ -743,8 +747,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         .title("현재 위치")
                         .anchor(0.5f, 1.0f)
                     cMarker = it.addMarker(markerOptions)
-//                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
-//                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
+                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
                 }
             }
         }
