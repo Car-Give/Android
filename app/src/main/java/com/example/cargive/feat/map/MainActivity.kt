@@ -25,7 +25,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -59,9 +58,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.*
 import com.google.android.material.navigation.NavigationView
-import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.*
-import okhttp3.internal.wait
 import java.io.ByteArrayOutputStream
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
@@ -94,6 +91,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var nav: MainNavheaderBinding
     private var naverPolyline: Polyline? = null
 
+    private var aroundSelected = false
     private var lastSearch = ""
     private var latitude = 0.0
     private var longitude = 0.0
@@ -117,8 +115,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (binding.searchResultFrame.visibility == View.VISIBLE) {
                         setVisibility(0)
                         Log.d("검색 결과 제거", "검색 결과 제거")
-                        binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            topMargin = binding.linearLayout.marginTop - 40
+                        if(aroundSelected) {
+                            binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                topMargin = binding.linearLayout.marginTop - 40
+                            }
+                            aroundSelected = false
                         }
                         binding.searchResultFrame.visibility = View.GONE
                         return
@@ -164,8 +165,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } else {
                 if(binding.searchResultFrame.visibility == View.VISIBLE) {
                     setVisibility(3)
-                    binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        topMargin = binding.linearLayout.marginTop - 40
+                    if(aroundSelected) {
+                        binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            topMargin = binding.linearLayout.marginTop - 40
+                        }
+                        aroundSelected = false
                     }
                 } else {
                     if(binding.choiceFrame.visibility == View.VISIBLE) {
@@ -536,16 +540,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //프로필 화면으로 전환
         }
         nav.aroundBtn.setOnClickListener {
-            setResultFrameSize(0)
-            binding.constraintLayout.visibility = View.VISIBLE
-            binding.searchPlaceName.visibility = View.VISIBLE
-            binding.sortSpinner.visibility = View.VISIBLE
-            binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = binding.linearLayout.marginTop + 40
-            }
-            binding.currentLocaiton.visibility = View.GONE
+            if(!aroundSelected) {
+                setResultFrameSize(0)
+                binding.constraintLayout.visibility = View.VISIBLE
+                binding.searchPlaceName.visibility = View.VISIBLE
+                binding.sortSpinner.visibility = View.VISIBLE
+                binding.linearLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = binding.linearLayout.marginTop + 40
+                }
+                aroundSelected = true
 
-            searchPlaces("주차장")
+                binding.currentLocaiton.visibility = View.GONE
+
+                searchPlaces("주차장")
+            }
         }
         nav.mycarBtn.setOnClickListener {
             //내 차 화면으로 전환
@@ -644,6 +652,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
+        googleMap?.uiSettings?.isCompassEnabled = false
         Log.d("map", "map ready!")
         if (checkPermissions()) {
 //            setLocationUpdates()
@@ -747,8 +756,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         .title("현재 위치")
                         .anchor(0.5f, 1.0f)
                     cMarker = it.addMarker(markerOptions)
-                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
-                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
+//                    it.moveCamera(CameraUpdateFactory.newLatLng(marker))
+//                    it.moveCamera(CameraUpdateFactory.zoomTo(15f))
                 }
             }
         }
