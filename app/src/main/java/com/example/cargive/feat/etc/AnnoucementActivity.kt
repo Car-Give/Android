@@ -6,8 +6,7 @@ import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cargive.R
 import com.example.cargive.databinding.ActivityAnnoucementBinding
-import com.example.cargive.model.etc.AnnounceModel
-import com.example.cargive.model.etc.UsageHistoryModel
+import com.example.cargive.data.etc.AnnounceModel
 
 class AnnoucementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAnnoucementBinding

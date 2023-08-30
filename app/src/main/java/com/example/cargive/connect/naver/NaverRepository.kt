@@ -1,9 +1,9 @@
-package com.example.cargive.model.network.naver
+package com.example.cargive.connect.naver
 
 import android.location.Location
 import android.util.Log
 import com.example.cargive.BuildConfig
-import com.example.cargive.model.network.naver.route.NaverRouteModel
+import com.example.cargive.data.naver.route.NaverRouteModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

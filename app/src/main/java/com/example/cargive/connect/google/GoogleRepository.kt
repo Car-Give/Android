@@ -1,8 +1,8 @@
-package com.example.cargive.model.network.google
+package com.example.cargive.connect.google
 
 import android.util.Log
 import com.example.cargive.BuildConfig
-import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
+import com.example.cargive.data.google.search.GooglePlaceSearchModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

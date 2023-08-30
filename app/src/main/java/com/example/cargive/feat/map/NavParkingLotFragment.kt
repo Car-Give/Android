@@ -8,8 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.cargive.databinding.ParkingLotListBinding
-import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
-import com.example.cargive.model.network.google.search.Results
+import com.example.cargive.data.google.search.Results
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.*

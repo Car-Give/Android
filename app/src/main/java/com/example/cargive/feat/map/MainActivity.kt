@@ -42,10 +42,10 @@ import com.example.cargive.databinding.ActivityMainBinding
 import com.example.cargive.databinding.MainNavheaderBinding
 import com.example.cargive.feat.etc.AnnoucementActivity
 import com.example.cargive.feat.etc.UsageHistoryActivity
-import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
-import com.example.cargive.model.network.google.GoogleRepository
-import com.example.cargive.model.network.google.search.Results
-import com.example.cargive.model.network.naver.NaverRepository
+import com.example.cargive.data.google.search.GooglePlaceSearchModel
+import com.example.cargive.connect.google.GoogleRepository
+import com.example.cargive.data.google.search.Results
+import com.example.cargive.connect.naver.NaverRepository
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -398,8 +398,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         location?.latitude = latitude
         binding.searchResultFrame.visibility = View.VISIBLE
 
-        var bitmap : Bitmap? = null
-
         if (result.results.isNotEmpty()) {
             val sorted = result.results.sortedBy {
                 val placeLocation = Location("place")
@@ -412,8 +410,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 it.distance!! <= 2000
             }
             val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS,
-                Place.Field.PHONE_NUMBER, Place.Field.PHOTO_METADATAS,
-                Place.Field.PRICE_LEVEL, Place.Field.WEBSITE_URI
+                Place.Field.PHONE_NUMBER, Place.Field.PHOTO_METADATAS
             )
             val coroutine = CoroutineScope(Dispatchers.IO)
             coroutine.launch {
@@ -451,9 +448,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     .build()
                                 placesClient.fetchPhoto(photoRequest)
                                     .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
-                                        bitmap = fetchPhotoResponse.bitmap
-                                        Log.d("getbitmap", "bitmap: $bitmap")
-                                        it.bitmaps = bitmap
+                                        it.bitmaps = fetchPhotoResponse.bitmap
                                     }.addOnFailureListener { exception: Exception ->
                                         if (exception is ApiException) {
                                             Log.d("getbitmap", "Place not found: " + exception.message)
@@ -466,12 +461,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 Log.e("place", "Place not found: " + it.message)
                             }
                     }
+                    delay(100)
+                    withContext(Dispatchers.Main) {
+                        showPlaceList(appropriateSorted)
+                    }
                 }
-                val result = resultDeferred.await()
-                delay(1000)
-                withContext(Dispatchers.Main) {
-                    showPlaceList(appropriateSorted)
-                }
+//                val result = resultDeferred.await()
+//                delay(1500)
+//                withContext(Dispatchers.Main) {
+//                    showPlaceList(appropriateSorted)
+//                }
             }
         } else {
             binding.searchResult.visibility = View.GONE
@@ -493,9 +492,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)
-        Handler(Looper.getMainLooper()).postDelayed({binding.drawerLayout.closeDrawers()}, 500)
+//        Handler(Looper.getMainLooper()).postDelayed({binding.drawerLayout.closeDrawers()}, 500)
         removePlaceMarker()
         adapter.addMarker()
+        binding.drawerLayout.closeDrawers()
     }
 
     fun showPlaceNav(result: Results, distance: Int, bitmap: Bitmap?,
@@ -509,7 +509,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             binding.placeImg.setImageBitmap(it)
         }
         this.placeId = placeId
-        binding.internalCall.text = phoneNumber
+        if(phoneNumber.isBlank()) {
+            binding.callFrame.visibility = View.GONE
+        } else {
+            binding.callFrame.visibility = View.VISIBLE
+            binding.internalCall.text = phoneNumber
+        }
         binding.detailAddress.text = address
 
         binding.placeDistance.text = distance.toString() + "m"
@@ -911,8 +916,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 "call" -> {
                     if(!values[1].isNullOrBlank()) {
                         binding.internalCall.text = values[1]
+                        binding.callFrame.visibility = View.VISIBLE
                     } else {
-                        binding.internalCall.text = ""
+                        binding.callFrame.visibility = View.GONE
                     }
                 }
                 "address" -> {

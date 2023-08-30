@@ -3,11 +3,10 @@ package com.example.cargive.feat.etc
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cargive.R
 import com.example.cargive.databinding.ActivityUsageHistoryBinding
-import com.example.cargive.model.etc.UsageHistoryModel
+import com.example.cargive.data.etc.UsageHistoryModel
 
 class UsageHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUsageHistoryBinding

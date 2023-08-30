@@ -9,15 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.R
 import android.content.Context
 import com.example.cargive.databinding.FragementChooseParkinglotBinding
-import com.example.cargive.model.network.google.search.Results
-import com.google.android.gms.common.api.ApiException
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.PlaceLikelihood
+import com.example.cargive.data.google.search.Results
 import com.google.android.libraries.places.api.net.*
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 

@@ -1,7 +1,6 @@
 package com.example.cargive.feat.map
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.location.Location
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,11 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cargive.R
 import com.example.cargive.databinding.ParkingLotListBinding
-import com.example.cargive.model.network.google.search.Results
-import com.google.android.gms.common.api.ApiException
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.*
-import kotlin.math.roundToInt
+import com.example.cargive.data.google.search.Results
 
 class ParkingLotListAdapter(private val activity: Context):
     ListAdapter<Results, ParkingLotListAdapter.ViewHolder>(DiffCallBack) {
@@ -153,6 +148,7 @@ class ParkingLotListAdapter(private val activity: Context):
     fun addMarker() {
         val main = activity as MainActivity
         for(data in currentList) {
+            Log.d("data", "calll: ${data.call}, address: ${data.address}, distance: ${data.distance}")
             main.addPlaceMarker(data.geometry.location.lat, data.geometry.location.lng, data.name, data.call!!, data.address!!, data.distance!!, data.bitmaps)
         }
 

@@ -1,4 +1,4 @@
-package com.example.cargive.model.etc
+package com.example.cargive.data.etc
 
 sealed class EtcModels {
     abstract val type: String

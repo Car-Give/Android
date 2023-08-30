@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cargive.R
 import com.example.cargive.databinding.EtcListBinding
-import com.example.cargive.model.etc.EtcModels
-import com.example.cargive.model.etc.AnnounceModel
-import com.example.cargive.model.etc.UsageHistoryModel
+import com.example.cargive.data.etc.EtcModels
+import com.example.cargive.data.etc.AnnounceModel
+import com.example.cargive.data.etc.UsageHistoryModel
 
 
 class EtcAdapter(): ListAdapter<EtcModels, RecyclerView.ViewHolder>(DiffCallBack) {

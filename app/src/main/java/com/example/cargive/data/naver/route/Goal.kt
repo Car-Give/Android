@@ -1,4 +1,4 @@
-package com.example.cargive.model.network.naver.route
+package com.example.cargive.data.naver.route
 
 data class Goal(
     val dir: Int,

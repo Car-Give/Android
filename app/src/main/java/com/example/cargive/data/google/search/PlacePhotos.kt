@@ -1,4 +1,4 @@
-package com.example.cargive.model.network.google.search
+package com.example.cargive.data.google.search
 
 data class PlacePhotos(
     val height: Double?,

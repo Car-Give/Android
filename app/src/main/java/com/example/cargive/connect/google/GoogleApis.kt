@@ -1,6 +1,6 @@
-package com.example.cargive.model.network.google
+package com.example.cargive.connect.google
 
-import com.example.cargive.model.network.google.search.GooglePlaceSearchModel
+import com.example.cargive.data.google.search.GooglePlaceSearchModel
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
