@@ -18,7 +18,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.*
 import kotlin.math.roundToInt
 
-class ParkingLotListAdapter(private val cLocation: Location, private val client: PlacesClient, private val activity: Context):
+class ParkingLotListAdapter(private val activity: Context):
     ListAdapter<Results, ParkingLotListAdapter.ViewHolder>(DiffCallBack) {
 
     companion object {
@@ -51,8 +51,8 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             pLocation.latitude = datas.geometry.location.lat
             pLocation.longitude = datas.geometry.location.lng
             Log.d("place_id", datas.place_id)
-            val distance = cLocation.distanceTo(pLocation).roundToInt()
-            binding.placeDistance.text = distance.toString()+"m"
+//            val distance = cLocation.distanceTo(pLocation).roundToInt()
+            binding.placeDistance.text = datas.distance.toString()+"m"
             val main = activity as MainActivity
             if(datas.call.isNullOrBlank()) {
                 binding.callFrame.visibility = View.GONE
@@ -65,7 +65,7 @@ class ParkingLotListAdapter(private val cLocation: Location, private val client:
             binding.detailAddress.text = datas.address
             binding.placeInfoFrame.setOnClickListener {
                 Log.d("bitmaps", datas.bitmaps.toString())
-                main.showPlaceNav(datas, distance, datas.bitmaps, datas.call!!, datas.address!!, datas.place_id)
+                main.showPlaceNav(datas, datas.distance!!, datas.bitmaps, datas.call!!, datas.address!!, datas.place_id)
             }
 
             binding.placeLike.setOnClickListener {

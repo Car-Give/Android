@@ -489,7 +489,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.searchResult.visibility = View.VISIBLE
         binding.menuBtn.visibility = View.VISIBLE
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        val adapter = ParkingLotListAdapter(location!!, placesClient, this)
+        val adapter = ParkingLotListAdapter(this)
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)

@@ -125,7 +125,7 @@ class SearchParkingLotFragment(
 
     private fun initRecycler(sorted: List<Results>) {
         binding.searchResult.visibility = View.VISIBLE
-        val adapter = ParkingLotListAdapter(location, client, context)
+        val adapter = ParkingLotListAdapter(context)
         binding.searchResult.adapter = adapter
         binding.searchResult.layoutManager = LinearLayoutManager(requireContext())
         adapter.submitList(sorted)
