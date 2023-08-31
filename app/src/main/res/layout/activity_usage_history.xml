@@ -20,7 +20,7 @@
             android:layout_marginEnd="10dp"
             android:text="이용기록"
             android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:textSize="25sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <View
@@ -33,6 +33,6 @@
         android:id="@+id/usage_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/etc_list"/>
+        tools:listitem="@layout/usage_history_list" />
 
 </LinearLayout>

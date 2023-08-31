@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".feat.etc.AnnoucementActivity">
+    tools:context=".feat.etc.UsageHistoryActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -18,17 +18,20 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="10dp"
-            android:text="공지사항"
+            android:text="자주 묻는 질문"
             android:textColor="@color/black"
             android:textSize="25sp" />
     </androidx.appcompat.widget.Toolbar>
 
+    <View
+        android:id="@+id/division"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="#FAFAFA" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/announcement_list"
+        android:id="@+id/faq_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        tools:listitem="@layout/etc_list" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

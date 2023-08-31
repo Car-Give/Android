@@ -29,7 +29,7 @@ class UsageHistoryActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         val list = listOf(UsageHistoryModel(type, "주차", "2023 08 19"))
-        val adapter = EtcAdapter()
+        val adapter = UsageHistoryAdapter()
         binding.usageHistory.adapter = adapter
         binding.usageHistory.layoutManager = LinearLayoutManager(this)
         adapter.submitList(list)

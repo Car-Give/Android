@@ -46,6 +46,7 @@ import com.example.cargive.data.google.search.GooglePlaceSearchModel
 import com.example.cargive.connect.google.GoogleRepository
 import com.example.cargive.data.google.search.Results
 import com.example.cargive.connect.naver.NaverRepository
+import com.example.cargive.feat.etc.UserGuideActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -461,7 +462,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 Log.e("place", "Place not found: " + it.message)
                             }
                     }
-                    delay(100)
+                    delay(1000)
                     withContext(Dispatchers.Main) {
                         showPlaceList(appropriateSorted)
                     }
@@ -567,7 +568,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //즐겨찾기 화면으로 전환
         }
         nav.useInfo.setOnClickListener {
-
+            val intent = Intent(this, UserGuideActivity::class.java)
+            startActivity(intent)
         }
         nav.useHistory.setOnClickListener {
             val intent = Intent(this, UsageHistoryActivity::class.java)

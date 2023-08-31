@@ -9,25 +9,19 @@ import com.example.cargive.R
 import com.example.cargive.databinding.EtcListBinding
 import com.example.cargive.data.etc.EtcModels
 import com.example.cargive.data.etc.AnnounceModel
-import com.example.cargive.data.etc.UsageHistoryModel
 
 
-class EtcAdapter(): ListAdapter<EtcModels, RecyclerView.ViewHolder>(DiffCallBack) {
+class AnnounceAdapter(): ListAdapter<AnnounceModel, RecyclerView.ViewHolder>(DiffCallBack) {
 
     companion object {
-        private val DiffCallBack = object : DiffUtil.ItemCallback<EtcModels>() {
-            override fun areItemsTheSame(oldItem: EtcModels, newItem: EtcModels): Boolean {
+        private val DiffCallBack = object : DiffUtil.ItemCallback<AnnounceModel>() {
+            override fun areItemsTheSame(oldItem: AnnounceModel, newItem: AnnounceModel): Boolean {
 
                 return oldItem.date == newItem.date && oldItem.content == newItem.content
             }
 
-            override fun areContentsTheSame(oldItem: EtcModels, newItem: EtcModels): Boolean {
-                return when {
-                    oldItem is UsageHistoryModel && newItem is UsageHistoryModel -> oldItem == newItem
-                    oldItem is AnnounceModel && newItem is AnnounceModel -> oldItem == newItem
-                    // 다른 아이템 유형에 대한 비교 추가
-                    else -> false
-                }
+            override fun areContentsTheSame(oldItem: AnnounceModel, newItem: AnnounceModel): Boolean {
+                return oldItem == newItem
             }
 
         }
@@ -40,16 +34,7 @@ class EtcAdapter(): ListAdapter<EtcModels, RecyclerView.ViewHolder>(DiffCallBack
 
     inner class ViewHolderShared(private val binding: EtcListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: EtcModels){
-            when (item) {
-                is UsageHistoryModel -> {
-                    binding.etcImg.setImageResource(R.drawable.park_car)
-
-                }
-                is AnnounceModel -> {
-                    binding.etcImg.setImageResource(R.drawable.announcement)
-                }
-                // 다른 아이템 유형에 대한 바인딩 처리 추가
-            }
+            binding.etcImg.setImageResource(R.drawable.announcement)
             binding.etcContent.text = item.content
             binding.etcDate.text = item.date
         }

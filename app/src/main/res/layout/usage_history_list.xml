@@ -31,10 +31,10 @@
         android:id="@+id/etc_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
         android:maxLines="1"
         android:textSize="11sp"
-        app:layout_constraintStart_toStartOf="@+id/etc_img"
+        app:layout_constraintStart_toStartOf="@+id/etc_content"
         app:layout_constraintTop_toBottomOf="@+id/etc_img" />
 
     <View
