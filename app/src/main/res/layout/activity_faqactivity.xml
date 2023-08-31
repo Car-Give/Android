@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,33 +7,92 @@
     android:orientation="vertical"
     tools:context=".feat.etc.UsageHistoryActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginEnd="10dp"
-            android:text="자주 묻는 질문"
-            android:includeFontPadding="false"
-            android:fontFamily="@font/sans_medium"
-            android:textColor="@color/black"
-            android:textSize="25sp" />
-    </androidx.appcompat.widget.Toolbar>
+            android:gravity="center">
 
-    <View
-        android:id="@+id/division"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="#FAFAFA" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/sans_medium"
+                android:includeFontPadding="false"
+                android:text="자주 묻는 질문"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+        </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/faq_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/faq_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/faq_list"/>
 
-</LinearLayout>
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/call_center_img"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="150dp"
+        android:src="@drawable/call_center_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/open_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
+        android:text="영업시간"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/call_center_img"
+        app:layout_constraintTop_toBottomOf="@id/call_center_img" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
+        android:text="평일 10:00 ~ 17:00"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@id/open_hours"
+        app:layout_constraintTop_toTopOf="@+id/open_hours" />
+
+    <TextView
+        android:id="@+id/call_inquiry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
+        android:text="전화문의"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/call_center_img"
+        app:layout_constraintTop_toBottomOf="@+id/open_hours" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
+        android:text="031 - 123 - 4567"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@+id/call_inquiry"
+        app:layout_constraintTop_toTopOf="@+id/call_inquiry" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

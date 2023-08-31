@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -120,56 +121,58 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/call_center_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="150dp"
         android:src="@drawable/call_center_black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="150dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:layout_marginTop="10dp"
         android:id="@+id/open_hours"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/call_center_img"
-        app:layout_constraintEnd_toStartOf="@id/call_center_img"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/sans_medium"
         android:includeFontPadding="false"
-        android:textSize="11sp"
-        android:text="영업시간"/>
+        android:text="영업시간"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/call_center_img"
+        app:layout_constraintTop_toBottomOf="@id/call_center_img" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="11sp"
-        app:layout_constraintStart_toEndOf="@id/open_hours"
-        app:layout_constraintTop_toTopOf="@+id/open_hours"
-        android:text="평일 10:00 ~ 17:00"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/sans_medium"
         android:includeFontPadding="false"
-        android:layout_marginStart="8dp"/>
+        android:text="평일 10:00 ~ 17:00"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@id/open_hours"
+        app:layout_constraintTop_toTopOf="@+id/open_hours" />
 
     <TextView
-        android:layout_marginTop="10dp"
         android:id="@+id/call_inquiry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/open_hours"
-        app:layout_constraintEnd_toStartOf="@id/call_center_img"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/sans_medium"
         android:includeFontPadding="false"
-        android:textSize="11sp"
-        android:text="전화문의"/>
+        android:text="전화문의"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/call_center_img"
+        app:layout_constraintTop_toBottomOf="@+id/open_hours" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="11sp"
-        app:layout_constraintStart_toEndOf="@+id/call_inquiry"
-        app:layout_constraintTop_toTopOf="@+id/call_inquiry"
-        android:text="031 - 123 - 4567"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/sans_medium"
         android:includeFontPadding="false"
-        android:layout_marginStart="8dp"/>
+        android:text="031 - 123 - 4567"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@+id/call_inquiry"
+        app:layout_constraintTop_toTopOf="@+id/call_inquiry" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

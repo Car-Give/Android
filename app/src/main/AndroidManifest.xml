@@ -19,7 +19,8 @@
         tools:targetApi="33">
         <activity
             android:name=".feat.etc.InquiryActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".feat.etc.CustomerServiceActivity"
             android:exported="false"
