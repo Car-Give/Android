@@ -18,6 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="10dp"
+            android:fontFamily="@font/sans_medium"
+            android:includeFontPadding="false"
             android:text="이용안내"
             android:textColor="@color/black"
             android:textSize="25sp" />
@@ -34,6 +36,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:drawablePadding="5dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="주차하기"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -44,6 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="그대로 내 차의 현재 주차되어 있는 위치를 인식하기 위한 버튼입니다."
         android:textSize="11sp" />
 
@@ -52,6 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="1. 차량을 이용한 후 주차위치가 확정시\n2. 주차하기 버튼을 누르기\n3. 주차위치 인식 누르기\n4. 그러면 현재 자신의 차량 위치가 저장이 됩니다"
         android:textColor="@color/black"
         android:textSize="14sp" />
@@ -61,6 +69,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="** 만약 주차 위치 인식이 제대로 되지 않는 경우 주차 위치 인식 옆 주차장 검색 버튼으로 현재 위치를 검색합니다**"
         android:textColor="#FF1744"
         android:textSize="11sp" />
@@ -71,6 +81,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:drawablePadding="5dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="내 차 찾기"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -81,6 +93,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="자신의 차량을 찾기 위해서 현재 위치로부터의 거리와 이동경로를 알아보기 위한 기능입니다.\n내 차 찾기를 누르면 현재 거리로부터 주차 후 내 차 까지의 거리를 한눈에 볼 수 있으며 추가적으로 네비게이션 안내까지 전달 받을 수 있습니다."
         android:textSize="11sp" />
 
@@ -91,6 +105,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:drawablePadding="5dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="Around"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -101,6 +117,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/sans_medium"
+        android:includeFontPadding="false"
         android:text="주위 주차장의 여부를 한눈에 살펴보기 위한 기능입니다.\n거리순으로 주위 주차장의 여부를 알아볼 수 있습니다."
         android:textSize="11sp" />
 

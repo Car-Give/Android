@@ -34,8 +34,7 @@
                 android:background="@drawable/round_rect"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                >
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/notice_msg"
@@ -44,7 +43,9 @@
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginVertical="2dp"
                     android:drawablePadding="8dp"
+                    android:fontFamily="@font/sans_medium"
                     android:gravity="center_vertical"
+                    android:includeFontPadding="false"
                     android:text="공지사항!"
                     app:drawableStartCompat="@drawable/announcement_resize" />
             </LinearLayout>
@@ -65,9 +66,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="6dp"
                     android:adjustViewBounds="true"
-                    android:visibility="gone"
                     android:background="@android:color/transparent"
                     android:src="@drawable/back"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,7 +94,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.9"
                             android:background="@null"
+                            android:fontFamily="@font/sans_medium"
                             android:imeOptions="actionSearch"
+                            android:includeFontPadding="false"
                             android:inputType="text"
                             android:padding="5dp"
                             android:textColor="@color/black"
@@ -148,6 +151,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:text="title"
                         android:textAlignment="center"
                         android:textColor="#0080F5"
@@ -181,6 +186,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableTop="@drawable/caution"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:text="현재 위치 반경 2km내에 주차장이 없습니다."
                         android:textAlignment="center" />
                 </LinearLayout>
@@ -231,6 +238,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:maxLines="1"
                             android:tag="off"
                             android:textAlignment="textStart"
@@ -254,6 +263,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
+                                android:fontFamily="@font/sans_medium"
+                                android:includeFontPadding="false"
                                 android:textColor="@color/black"
                                 android:textSize="18sp" />
 
@@ -271,6 +282,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
+                                android:fontFamily="@font/sans_medium"
+                                android:includeFontPadding="false"
                                 android:textSize="17sp" />
 
 
@@ -285,6 +298,8 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/sans_medium"
+                                android:includeFontPadding="false"
                                 android:text="현재 위치에서"
                                 android:textSize="17sp" />
 
@@ -293,6 +308,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
+                                android:fontFamily="@font/sans_medium"
+                                android:includeFontPadding="false"
                                 android:textColor="#FF1744"
                                 android:textSize="17sp" />
                         </LinearLayout>
@@ -318,12 +335,12 @@
                             android:id="@+id/place_like"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/star_empty"
-                            android:scaleType="fitCenter"
-                            app:layout_constraintEnd_toEndOf="@+id/place_img"
                             android:layout_margin="4dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/star_empty"
                             android:tag="empty"
-                            app:layout_constraintTop_toTopOf="@+id/place_img"/>
+                            app:layout_constraintEnd_toEndOf="@+id/place_img"
+                            app:layout_constraintTop_toTopOf="@+id/place_img" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -348,6 +365,8 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableStart="@drawable/follow"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:text="네비게이션 안내"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -379,6 +398,8 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableTop="@drawable/car_location_resize"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:paddingHorizontal="40dp"
                         android:paddingVertical="20dp"
                         android:text="주차위치 인식"
@@ -397,6 +418,8 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableTop="@drawable/search_blue_resize"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:paddingHorizontal="40dp"
                         android:paddingVertical="20dp"
                         android:text="  주차장 검색"
@@ -445,6 +468,8 @@
                         android:background="@android:color/transparent"
                         android:drawableStart="@drawable/parking_resize"
                         android:drawablePadding="8dp"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:paddingVertical="20dp"
                         android:text="주차하기"
                         android:textColor="@color/black"
@@ -466,6 +491,8 @@
                         android:background="@android:color/transparent"
                         android:drawableStart="@drawable/car_fill_resize"
                         android:drawablePadding="8dp"
+                        android:fontFamily="@font/sans_medium"
+                        android:includeFontPadding="false"
                         android:paddingVertical="20dp"
                         android:text="내차 찾기"
                         android:textColor="@color/black"
@@ -510,6 +537,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="8dp"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:textColor="@color/black"
                             android:textSize="17sp" />
 
@@ -517,6 +546,8 @@
                             android:id="@+id/my_car_type"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:textColor="@color/black"
                             android:textSize="13sp" />
 
@@ -531,6 +562,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="8dp"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:text="점검 날짜:"
                             android:textColor="@color/black"
                             android:textSize="13sp" />
@@ -539,6 +572,8 @@
                             android:id="@+id/my_car_inspect"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:textColor="@color/black"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -552,6 +587,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="8dp"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:text="주행거리:"
                             android:textColor="@color/black"
                             android:textSize="13sp" />
@@ -560,6 +597,8 @@
                             android:id="@+id/my_car_distance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/sans_medium"
+                            android:includeFontPadding="false"
                             android:textColor="@color/black"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -595,7 +634,9 @@
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginVertical="2dp"
                     android:drawablePadding="8dp"
+                    android:fontFamily="@font/sans_medium"
                     android:gravity="center_vertical"
+                    android:includeFontPadding="false"
                     android:text="현재 위치 반경 2km내에 주차장이 없습니다."
                     app:drawableStartCompat="@drawable/caution_small" />
             </LinearLayout>

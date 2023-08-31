@@ -32,6 +32,8 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/sans_medium"
                 android:tag="off"
                 android:textAlignment="textStart"
                 android:textColor="@color/black"
@@ -55,6 +57,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textColor="@color/black"
+                    android:includeFontPadding="false"
+                    android:fontFamily="@font/sans_medium"
                     android:textSize="18sp" />
 
 
@@ -71,6 +75,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:includeFontPadding="false"
+                    android:fontFamily="@font/sans_medium"
                     android:textSize="17sp" />
 
 
@@ -86,6 +92,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="현재 위치에서"
+                    android:includeFontPadding="false"
+                    android:fontFamily="@font/sans_medium"
                     android:textSize="17sp" />
 
                 <TextView
@@ -94,6 +102,8 @@
                     android:layout_height="wrap_content"
                     android:textColor="#FF1744"
                     android:layout_marginStart="8dp"
+                    android:includeFontPadding="false"
+                    android:fontFamily="@font/sans_medium"
                     android:textSize="17sp" />
             </LinearLayout>
 
@@ -148,6 +158,8 @@
             android:drawableStart="@drawable/follow"
             android:text="네비게이션 안내"
             android:textSize="18sp"
+            android:includeFontPadding="false"
+            android:fontFamily="@font/sans_medium"
             android:textColor="@color/white"
             android:visibility="gone"
             tools:layout_editor_absoluteX="15dp" />

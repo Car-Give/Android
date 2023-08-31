@@ -46,6 +46,7 @@ import com.example.cargive.data.google.search.GooglePlaceSearchModel
 import com.example.cargive.connect.google.GoogleRepository
 import com.example.cargive.data.google.search.Results
 import com.example.cargive.connect.naver.NaverRepository
+import com.example.cargive.feat.etc.CustomerServiceActivity
 import com.example.cargive.feat.etc.UserGuideActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -580,7 +581,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             startActivity(intent)
         }
         nav.customerService.setOnClickListener {
-
+            val intent = Intent(this, CustomerServiceActivity::class.java)
+            startActivity(intent)
         }
         nav.appSettings.setOnClickListener {
 

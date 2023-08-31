@@ -18,6 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="10dp"
+            android:fontFamily="@font/sans_medium"
+            android:includeFontPadding="false"
             android:text="공지사항"
             android:textColor="@color/black"
             android:textSize="25sp" />

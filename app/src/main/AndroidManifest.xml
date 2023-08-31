@@ -18,9 +18,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <activity
+            android:name=".feat.etc.InquiryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".feat.etc.CustomerServiceActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".feat.etc.FAQActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".feat.etc.UserGuideActivity"
             android:exported="false"

@@ -27,6 +27,8 @@
                 android:text="title"
                 android:textAlignment="center"
                 android:textColor="@color/black"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/sans_medium"
                 android:textSize="25sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -58,6 +60,8 @@
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/caution"
                 android:text="현재 위치 반경 2km내에 주차장이 없습니다."
+                android:includeFontPadding="false"
+                android:fontFamily="@font/sans_medium"
                 android:textAlignment="center" />
         </LinearLayout>
 

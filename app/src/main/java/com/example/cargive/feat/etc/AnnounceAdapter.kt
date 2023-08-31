@@ -11,7 +11,7 @@ import com.example.cargive.data.etc.EtcModels
 import com.example.cargive.data.etc.AnnounceModel
 
 
-class AnnounceAdapter(): ListAdapter<AnnounceModel, RecyclerView.ViewHolder>(DiffCallBack) {
+class AnnounceAdapter: ListAdapter<AnnounceModel, RecyclerView.ViewHolder>(DiffCallBack) {
 
     companion object {
         private val DiffCallBack = object : DiffUtil.ItemCallback<AnnounceModel>() {
