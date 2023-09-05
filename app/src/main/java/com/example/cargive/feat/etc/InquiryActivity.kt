@@ -1,5 +1,6 @@
 package com.example.cargive.feat.etc
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -25,6 +26,16 @@ class InquiryActivity : AppCompatActivity() {
         binding.myInquiryList.adapter = adapter
         binding.myInquiryList.layoutManager = LinearLayoutManager(this)
         adapter.submitList(listOf(InquiryModel("내 위치가 이상해요", "2023 08 31")))
+
+
+        binding.buttonFrame.setOnClickListener {
+            val intent = Intent(this, WriteInquiryActivity::class.java)
+            startActivity(intent)
+        }
+        binding.writeInquiryBtn.setOnClickListener {
+            val intent = Intent(this, WriteInquiryActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
