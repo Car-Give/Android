@@ -19,7 +19,7 @@ class WriteInquiryActivity : AppCompatActivity() {
         binding = ActivityWriteInquiryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val items = listOf("질문 유형을 선택해주세요.", "유형 1", "유형 2")
+        val items = listOf("질문 유형을 선택해주세요.", "이용 문의", "오류 신고", "서비스 제안", "기타")
         val adapter = TypeSpinnerAdapter(items, this)
         binding.inquiryTypeSpinner.adapter = adapter
 
