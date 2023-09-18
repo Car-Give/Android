@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -36,8 +38,11 @@ class WriteInquiryActivity : AppCompatActivity() {
                         binding.postFrame.setBackgroundResource(R.drawable.round_disabled)
                     }
                     else -> {
-                        Toast.makeText(applicationContext, "${items[position]} 눌림", Toast.LENGTH_SHORT).show()
-                        if(binding.inquiryContent.length() != 0) {
+//                        Toast.makeText(applicationContext, "${items[position]} 눌림", Toast.LENGTH_SHORT).show()
+                        if(binding.inquiryTitle.length() == 0 || binding.inquiryContent.length() == 0) {
+                            binding.postBtn.isEnabled = false
+                            binding.postFrame.setBackgroundResource(R.drawable.round_disabled)
+                        } else {
                             binding.postBtn.isEnabled = true
                             binding.postFrame.setBackgroundResource(R.drawable.round_follow)
                         }
@@ -52,6 +57,34 @@ class WriteInquiryActivity : AppCompatActivity() {
 
         }
 
+        binding.inquiryTitle.setOnKeyListener { v, keyCode, event ->
+            if(keyCode == KeyEvent.KEYCODE_ENTER) {
+                return@setOnKeyListener true
+            }
+            false
+        }
+
+        binding.inquiryTitle.addTextChangedListener (object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(s?.length == 0 || binding.inquiryTypeSpinner.selectedItemPosition == 0 || binding.inquiryContent.length() == 0) {
+                    binding.postBtn.isEnabled = false
+                    binding.postFrame.setBackgroundResource(R.drawable.round_disabled)
+                } else {
+                    binding.postBtn.isEnabled = true
+                    binding.postFrame.setBackgroundResource(R.drawable.round_follow)
+                }
+            }
+
+        })
+
         binding.inquiryContent.addTextChangedListener (object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -63,7 +96,8 @@ class WriteInquiryActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 binding.textLength.text = "${s?.length}/500"
-                if(s?.length == 0 || binding.inquiryTypeSpinner.selectedItemPosition == 0) {
+                Log.d("text", "inquiry content: ${s.toString()}")
+                if(s?.length == 0 || binding.inquiryTypeSpinner.selectedItemPosition == 0 || binding.inquiryTitle.length() == 0) {
                     binding.postBtn.isEnabled = false
                     binding.postFrame.setBackgroundResource(R.drawable.round_disabled)
                 } else {

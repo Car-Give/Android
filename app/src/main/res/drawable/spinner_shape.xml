@@ -9,7 +9,7 @@
         android:left="5dp"/>
     <!-- #f5f5f5" 색으로 채움 -->
     <solid
-        android:color="#ffffff"/>
+        android:color="#FAFAFA"/>
 
     <!-- 1dp 크기의 #000000 색 테두리 -->
     <stroke

@@ -38,14 +38,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:spinnerMode="dialog"
         android:background="@drawable/spinner_shape"
+        android:spinnerMode="dialog"
         app:layout_constraintTop_toBottomOf="@id/division" />
+
+    <EditText
+        android:id="@+id/inquiry_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/spinner_shape"
+        android:fontFamily="@font/sans_medium"
+        android:gravity="top"
+        android:hint="제목"
+        android:includeFontPadding="false"
+        android:lines="1"
+        android:maxLength="500"
+        android:maxLines="1"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/inquiry_type_spinner" />
 
     <EditText
         android:id="@+id/inquiry_content"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/spinner_shape"
@@ -54,8 +71,8 @@
         android:hint="문의 내용을 입력해주세요."
         android:includeFontPadding="false"
         android:maxLength="500"
-        android:padding="5dp"
-        app:layout_constraintTop_toBottomOf="@id/inquiry_type_spinner" />
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/inquiry_title" />
 
     <TextView
         android:id="@+id/text_length"
